@@ -68,6 +68,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.onSearch();
     this.stateSubscription = this.websocketService.onState().subscribe();
     this.websocketService.connect();
+    this.username = localStorage.getItem('username');
+    this.authenticated = !!localStorage.getItem('token');
   }
 
   onLoginSuccess(username: string) {
@@ -78,6 +80,8 @@ export class AppComponent implements OnInit, OnDestroy {
   logout() {
     this.authenticated = false;
     this.username = null;
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
   }
 
   onTimeChange(even: any) {

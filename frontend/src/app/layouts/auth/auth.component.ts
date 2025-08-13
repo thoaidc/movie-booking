@@ -1,6 +1,8 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {UsersService} from '../../core/services/users.service';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-auth',
@@ -11,19 +13,38 @@ import { FormsModule } from '@angular/forms';
 export class AuthComponent {
   @Output() loginSuccess = new EventEmitter<string>();
   isLogin = true;
-  loginData = { email: '', password: '' };
-  registerData = { name: '', email: '', password: '', confirmPassword: '' };
+  loginData = { username: '', password: '' };
+  registerData = { phone: '', fullname: '', username: '', email: '', password: '', confirmPassword: '' };
+
+  constructor(private userService: UsersService, private toast: ToastrService) {
+  }
 
   toggleMode() {
     this.isLogin = !this.isLogin;
   }
 
   submitLogin() {
-    console.log('Login data:', this.loginData);
-    this.loginSuccess.emit(this.loginData.email);
+    this.userService.login(this.loginData).subscribe(response => {
+      if (response.status && response.result) {
+        let token = response.result.token;
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", response.result.username);
+        this.loginSuccess.emit(this.loginData.username);
+        this.toast.success("Đăng nhập thành công");
+      } else {
+        this.toast.error(response.message);
+      }
+    });
   }
 
   submitRegister() {
-    console.log('Register data:', this.registerData);
+    this.userService.register(this.registerData).subscribe(response => {
+      if (response.status && response.result) {
+        this.isLogin = true;
+        this.toast.success("Đăng ký thành công");
+      } else {
+        this.toast.error(response.message);
+      }
+    });
   }
 }
