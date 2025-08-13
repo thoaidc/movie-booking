@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>vn.ptit.moviebooking</groupId>
-    <artifactId>discovery-service</artifactId>
+    <artifactId>discovery-server</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>Eureka server for service discovery</name>
+    <name>discovery-server</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
