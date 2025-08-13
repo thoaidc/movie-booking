@@ -1,0 +1,46 @@
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow p-4" style="width: 400px;">
+    <h4 class="text-center mb-3">{{ isLogin ? 'Đăng nhập' : 'Đăng ký' }}</h4>
+
+    <!-- Form Đăng nhập -->
+    <form *ngIf="isLogin" (ngSubmit)="submitLogin()">
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control" [(ngModel)]="loginData.email" name="loginEmail" required>
+      </div>
+      <div class="mb-3">
+        <label>Mật khẩu</label>
+        <input type="password" class="form-control" [(ngModel)]="loginData.password" name="loginPassword" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+    </form>
+
+    <!-- Form Đăng ký -->
+    <form *ngIf="!isLogin" (ngSubmit)="submitRegister()">
+      <div class="mb-3">
+        <label>Họ và tên</label>
+        <input type="text" class="form-control" [(ngModel)]="registerData.name" name="registerName" required>
+      </div>
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control" [(ngModel)]="registerData.email" name="registerEmail" required>
+      </div>
+      <div class="mb-3">
+        <label>Mật khẩu</label>
+        <input type="password" class="form-control" [(ngModel)]="registerData.password" name="registerPassword" required>
+      </div>
+      <div class="mb-3">
+        <label>Xác nhận mật khẩu</label>
+        <input type="password" class="form-control" [(ngModel)]="registerData.confirmPassword" name="registerConfirm" required>
+      </div>
+      <button type="submit" class="btn btn-success w-100">Đăng ký</button>
+    </form>
+
+    <!-- Nút chuyển đổi -->
+    <div class="text-center mt-3">
+      <button class="btn btn-link" (click)="toggleMode()">
+        {{ isLogin ? 'Chưa có tài khoản? Đăng ký ngay' : 'Đã có tài khoản? Đăng nhập' }}
+      </button>
+    </div>
+  </div>
+</div>

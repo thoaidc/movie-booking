@@ -7,7 +7,7 @@ import {DateFilterComponent} from './shared/components/date-filter/date-filter.c
 import {NgbDatepickerModule, NgbModal, NgbModalRef, NgbPagination} from '@ng-bootstrap/ng-bootstrap';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {SafeHtmlPipe} from './shared/pipes/safe-html.pipe';
-import {DecimalPipe, NgFor} from '@angular/common';
+import {DecimalPipe, NgFor, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import dayjs from 'dayjs/esm';
 import {ICON_RELOAD, ICON_SEARCH} from './shared/utils/icon';
@@ -17,6 +17,7 @@ import {BaseFilterRequest} from './core/models/request.model';
 import {Movie} from './core/models/movies.model';
 import {MovieService} from './core/services/movie.service';
 import {UtilsService} from './shared/utils/utils.service';
+import {AuthComponent} from './layouts/auth/auth.component';
 
 @Component({
   selector: 'app-root',
@@ -31,7 +32,9 @@ import {UtilsService} from './shared/utils/utils.service';
     SafeHtmlPipe,
     NgFor,
     FormsModule,
-    DecimalPipe
+    DecimalPipe,
+    AuthComponent,
+    NgIf
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -51,6 +54,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isLoading = false;
   movies: Movie[] = [];
+  authenticated: boolean = false;
+  username: string | null = '';
 
   constructor(
     private websocketService: WebsocketService,
@@ -63,6 +68,16 @@ export class AppComponent implements OnInit, OnDestroy {
     this.onSearch();
     this.stateSubscription = this.websocketService.onState().subscribe();
     this.websocketService.connect();
+  }
+
+  onLoginSuccess(username: string) {
+    this.authenticated = true;
+    this.username = username;
+  }
+
+  logout() {
+    this.authenticated = false;
+    this.username = null;
   }
 
   onTimeChange(even: any) {
