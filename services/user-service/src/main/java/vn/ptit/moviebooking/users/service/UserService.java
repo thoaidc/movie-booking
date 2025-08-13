@@ -6,24 +6,24 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import vn.ptit.moviebooking.users.dto.request.VerifyCustomerRequest;
 import vn.ptit.moviebooking.users.exception.BaseBadRequestException;
-import vn.ptit.moviebooking.users.repository.CustomerRepository;
 import vn.ptit.moviebooking.users.entity.User;
+import vn.ptit.moviebooking.users.repository.UserRepository;
 
 import java.util.Optional;
 
 @Service
 @Validated
-public class CustomerService {
+public class UserService {
 
-    private final CustomerRepository customerRepository;
-    private static final String ENTITY_NAME = "CustomerService";
+    private final UserRepository userRepository;
+    private static final String ENTITY_NAME = "UserService";
 
-    public CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public User getCustomerById(Integer customerId) {
-        Optional<User> customerOptional = customerRepository.findById(customerId);
+    public User getById(Integer customerId) {
+        Optional<User> customerOptional = userRepository.findById(customerId);
 
         if (customerOptional.isEmpty()) {
             throw new BaseBadRequestException(ENTITY_NAME, "Customer not exists");
@@ -38,6 +38,6 @@ public class CustomerService {
         customer.setFullname(request.getFullname());
         customer.setEmail(request.getEmail());
         customer.setPhone(request.getPhone());
-        return customerRepository.save(customer);
+        return userRepository.save(customer);
     }
 }

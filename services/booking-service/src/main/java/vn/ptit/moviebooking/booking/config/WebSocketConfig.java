@@ -15,11 +15,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Allow clients to subscribe to topics
         config.enableSimpleBroker("/topics");
         // Client sends message to server using this prefix
-        config.setApplicationDestinationPrefixes("/api/ws");
+        config.setApplicationDestinationPrefixes("/api/p/ws/messages");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-booking").setAllowedOriginPatterns("*");
+        registry.addEndpoint("/api/p/ws").setAllowedOriginPatterns("*");
     }
 }

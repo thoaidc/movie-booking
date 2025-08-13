@@ -12,14 +12,11 @@ public interface SeatRepository extends JpaRepository<Seat, Integer> {
 
     @Query(
         value = """
-            SELECT s.* FROM hdv_movie.seat s
-            JOIN hdv_movie.show_time sh ON s.cinema_room_id = sh.cinema_room_id
+            SELECT s.* FROM seat s
+            JOIN show_time sh ON s.cinema_room_id = sh.cinema_room_id
             WHERE sh.id = ?1
         """,
         nativeQuery = true
     )
     List<Seat> findAllByShowId(Integer showId);
-
-    @Query(value = "SELECT s.id FROM seat s WHERE s.cinema_room_id = ?1", nativeQuery = true)
-    List<Integer> findAllIdByCinemaRoomId(Integer roomId);
 }

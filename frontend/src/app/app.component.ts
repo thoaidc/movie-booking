@@ -4,10 +4,10 @@ import {LoadingBarModule} from '@ngx-loading-bar/core';
 import {Subscription} from 'rxjs';
 import {WebsocketService} from './core/services/websocket.service';
 import {DateFilterComponent} from './shared/components/date-filter/date-filter.component';
-import {NgbDatepickerModule, NgbModal, NgbModalRef, NgbPagination, NgbTooltip} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDatepickerModule, NgbModal, NgbModalRef, NgbPagination} from '@ng-bootstrap/ng-bootstrap';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {SafeHtmlPipe} from './shared/pipes/safe-html.pipe';
-import {DatePipe, DecimalPipe, NgClass, NgFor, NgIf} from '@angular/common';
+import {DecimalPipe, NgFor} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import dayjs from 'dayjs/esm';
 import {ICON_RELOAD, ICON_SEARCH} from './shared/utils/icon';
@@ -29,12 +29,8 @@ import {UtilsService} from './shared/utils/utils.service';
     NgSelectModule,
     NgbPagination,
     SafeHtmlPipe,
-    NgIf,
     NgFor,
     FormsModule,
-    NgClass,
-    DatePipe,
-    NgbTooltip,
     DecimalPipe
   ],
   templateUrl: './app.component.html',

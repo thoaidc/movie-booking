@@ -13,7 +13,7 @@ import vn.ptit.moviebooking.users.dto.request.VerifyCustomerRequest;
 import vn.ptit.moviebooking.users.dto.request.VerifyCustomerRequestCommand;
 import vn.ptit.moviebooking.users.dto.response.BaseCommandReplyMessage;
 import vn.ptit.moviebooking.users.entity.User;
-import vn.ptit.moviebooking.users.service.CustomerService;
+import vn.ptit.moviebooking.users.service.UserService;
 
 import java.util.Objects;
 
@@ -23,10 +23,10 @@ public class SagaConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(SagaConsumer.class);
     private final RabbitMQProducer rabbitMQProducer;
-    private final CustomerService customerService;
+    private final UserService customerService;
 
     public SagaConsumer(RabbitMQProducer rabbitMQProducer,
-                        CustomerService customerService) {
+                        UserService customerService) {
         this.rabbitMQProducer = rabbitMQProducer;
         this.customerService = customerService;
     }

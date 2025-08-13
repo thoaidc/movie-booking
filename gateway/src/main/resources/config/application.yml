@@ -10,52 +10,35 @@ spring:
           enabled: true  # Automatically create routes from service discovery
           lower-case-service-id: true
       routes:
-        - id: customer-service
-          uri: lb://customer-service
+        - id: user-service
+          uri: lb://user-service
           predicates:
-            - Path=/api/customer-service/**
-          filters:
-            - RewritePath=/api/customer-service/(?<segment>.*), /api/${segment}
+            - Path=/api/users/**, /api/p/users/**
 
         - id: movie-service
           uri: lb://movie-service
           predicates:
-            - Path=/api/movie-service/**
-          filters:
-            - RewritePath=/api/movie-service/(?<segment>.*), /api/${segment}
+            - Path=/api/p/movies/**, /api/p/shows/**, /api/p/seats/**
 
         - id: notification-service
           uri: lb://notification-service
           predicates:
-            - Path=/api/notification-service/**
-          filters:
-            - RewritePath=/api/notification-service/(?<segment>.*), /api/${segment}
+            - Path=/api/notifications/**, /api/p/notifications/**
 
         - id: payment-service
           uri: lb://payment-service
           predicates:
-            - Path=/api/payment-service/**
-          filters:
-            - RewritePath=/api/payment-service/(?<segment>.*), /api/${segment}
+            - Path=/api/payments/**, /api/p/payments/**
 
-        - id: seat-availability-service
-          uri: lb://seat-availability-service
+        - id: booking-service
+          uri: lb://booking-service
           predicates:
-            - Path=/api/seat-availability-service/**
-          filters:
-            - RewritePath=/api/seat-availability-service/(?<segment>.*), /api/${segment}
+            - Path=/api/bookings/**, /api/p/bookings/**
 
-        - id: ticket-booking-service
-          uri: lb://ticket-booking-service
+        - id: booking-service-websocket
+          uri: lb:ws://booking-service
           predicates:
-            - Path=/api/ticket-booking-service/**
-          filters:
-            - RewritePath=/api/ticket-booking-service/(?<segment>.*), /api/${segment}
-
-        - id: ticket-booking-service-websocket
-          uri: lb:ws://ticket-booking-service
-          predicates:
-            - Path=/ws-booking
+            - Path=/api/p/ws
             - Header=Upgrade, websocket
 
   lifecycle:

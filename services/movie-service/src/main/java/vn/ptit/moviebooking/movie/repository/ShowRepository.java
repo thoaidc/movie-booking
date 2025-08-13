@@ -22,9 +22,9 @@ public interface ShowRepository extends JpaRepository<Show, Integer> {
                 s.end_time as endTime,
                 m.name as movie,
                 cr.name as room
-            FROM hdv_movie.show_time s
-            JOIN hdv_movie.movie m ON s.movie_id = m.id
-            JOIN hdv_movie.cinema_room cr on s.cinema_room_id = cr.id
+            FROM show_time s
+            JOIN movie m ON s.movie_id = m.id
+            JOIN cinema_room cr on s.cinema_room_id = cr.id
             WHERE s.movie_id = ?1
         """,
         nativeQuery = true

@@ -5,4 +5,4 @@ import org.springframework.stereotype.Repository;
 import vn.ptit.moviebooking.users.entity.User;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<User, Integer> {}
+public interface UserRepository extends JpaRepository<User, Integer> {}

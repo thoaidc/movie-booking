@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import vn.ptit.moviebooking.booking.dto.response.BaseResponseDTO;
 
-@FeignClient(name = "customer-service")
-public interface CustomerServiceClient {
+@FeignClient(name = "user-service")
+public interface UserServiceClient {
 
-    @GetMapping("/api/customers/{customerId}")
-    BaseResponseDTO getCustomerInfo(@PathVariable Integer customerId);
+    @GetMapping("/api/users/{userId}")
+    BaseResponseDTO getUserInfo(@PathVariable Integer userId);
 }

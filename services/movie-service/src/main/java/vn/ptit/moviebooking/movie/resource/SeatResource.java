@@ -10,7 +10,7 @@ import vn.ptit.moviebooking.movie.service.CheckSeatAvailabilityService;
 import vn.ptit.moviebooking.movie.service.MovieService;
 
 @RestController
-@RequestMapping("/api/seats")
+@RequestMapping("/api/p/seats")
 public class SeatResource {
 
     private final MovieService movieService;
@@ -19,11 +19,6 @@ public class SeatResource {
     public SeatResource(MovieService movieService, CheckSeatAvailabilityService checkSeatAvailabilityService) {
         this.movieService = movieService;
         this.checkSeatAvailabilityService = checkSeatAvailabilityService;
-    }
-
-    @GetMapping("/by-all-shows")
-    public BaseResponseDTO getAllSeatsGroupedByShow() {
-        return movieService.getAllSeatsGroupedByShow();
     }
 
     @GetMapping("/by-show/{showId}")

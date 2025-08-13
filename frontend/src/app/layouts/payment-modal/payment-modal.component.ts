@@ -42,16 +42,16 @@ export class PaymentModalComponent {
 
   confirm() {
     this.initialize();
-
-    this.bookingService.payment(this.paymentInfo).subscribe(response => {
-      if (response.status) {
-        this.toast.success('Thanh toán đang được xử lý', 'Thông báo');
-      } else {
-        this.toast.error('Gửi yêu cầu thanh toán thất bại', 'Thông báo');
-      }
-
-      this.activeModal.close(response.status);
-    });
+    //
+    // this.bookingService.payment(this.paymentInfo).subscribe(response => {
+    //   if (response.status) {
+    //     this.toast.success('Thanh toán đang được xử lý', 'Thông báo');
+    //   } else {
+    //     this.toast.error('Gửi yêu cầu thanh toán thất bại', 'Thông báo');
+    //   }
+    //
+    //   this.activeModal.close(response.status);
+    // });
   }
 
   dismiss() {

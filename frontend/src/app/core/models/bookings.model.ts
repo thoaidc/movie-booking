@@ -5,13 +5,6 @@ export interface Booking {
   seatIds: number[];
 }
 
-export interface Customer {
-  fullname: string;
-  email: string;
-  phone: string;
-  bookingId: number;
-}
-
 export interface Payment {
   bookingId: number;
   amount: number;

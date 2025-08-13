@@ -34,17 +34,17 @@ public class TicketBookingService {
 
     private final TicketBookingRepository ticketBookingRepository;
     private final BookingSeatRepository bookingSeatRepository;
-    private final CustomerServiceClient customerServiceClient;
+    private final UserServiceClient userServiceClient;
     private final ObjectMapper objectMapper;
     private static final String ENTITY_NAME = "TicketBookingService";
 
     public TicketBookingService(TicketBookingRepository ticketBookingRepository,
                                 BookingSeatRepository bookingSeatRepository,
-                                CustomerServiceClient customerServiceClient,
+                                UserServiceClient userServiceClient,
                                 ObjectMapper objectMapper) {
         this.ticketBookingRepository = ticketBookingRepository;
         this.bookingSeatRepository = bookingSeatRepository;
-        this.customerServiceClient = customerServiceClient;
+        this.userServiceClient = userServiceClient;
         this.objectMapper = objectMapper;
     }
 
@@ -130,8 +130,8 @@ public class TicketBookingService {
     }
 
     public NotificationCommand createNotificationCommand(BaseCommandReplyMessage request) {
-        Integer customerId = ticketBookingRepository.findCustomerIdByBookingId(request.getSagaId());
-        BaseResponseDTO responseDTO = customerServiceClient.getCustomerInfo(customerId);
+        Integer userId = ticketBookingRepository.findCustomerIdByBookingId(request.getSagaId());
+        BaseResponseDTO responseDTO = userServiceClient.getUserInfo(userId);
         NotificationCommand command = new NotificationCommand();
         command.setSagaId(request.getSagaId());
 

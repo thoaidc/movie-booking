@@ -11,7 +11,7 @@ import vn.ptit.moviebooking.movie.dto.response.BaseResponseDTO;
 import vn.ptit.moviebooking.movie.service.MovieService;
 
 @RestController
-@RequestMapping("/api/movies")
+@RequestMapping("/api/p/movies")
 public class MovieResource {
 
     private final MovieService movieService;

@@ -12,7 +12,6 @@ import {SeatService} from '../../core/services/seats.service';
 import {Booking} from '../../core/models/bookings.model';
 import {BookingService} from '../../core/services/bookings.service';
 import {WebsocketService} from '../../core/services/websocket.service';
-import {VerifyCustomerModalComponent} from '../verify-customer-modal/verify-customer-modal.component';
 import {ToastrService} from 'ngx-toastr';
 import {IMessage} from '@stomp/stompjs';
 import {Subscription} from 'rxjs';
@@ -172,9 +171,9 @@ export class BookingModalComponent implements OnInit, OnDestroy {
   }
 
   openVerifyCustomerModal(bookingId: number) {
-    this.modalRef = this.modalService.open(VerifyCustomerModalComponent, {backdrop: 'static'});
-    this.modalRef.componentInstance.bookingId = bookingId;
-    this.modalRef.componentInstance.initialize();
+    // this.modalRef = this.modalService.open(VerifyCustomerModalComponent, {backdrop: 'static'});
+    // this.modalRef.componentInstance.bookingId = bookingId;
+    // this.modalRef.componentInstance.initialize();
   }
 
   private handleWebSocketMessage(message: IMessage) {
