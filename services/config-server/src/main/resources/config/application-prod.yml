@@ -1,0 +1,31 @@
+# ===================================================================
+# Spring Boot configuration.
+#
+# This configuration will be overridden by the Spring profile you use
+# For example: application-dev.yml if you use the "dev" profile.
+# ===================================================================
+
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# https://docs.spring.io/spring-boot/reference/features/profiles.html
+# ===================================================================
+
+logging:
+  file:
+    path: /mnt/logs/
+  level:
+    root: info
+    vn.ptit.moviebooking.configserver: info
+  charset:
+    console: UTF-8
+    file: UTF-8
+
+spring:
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+            - file:./configs
+            - file:./configs/{application}

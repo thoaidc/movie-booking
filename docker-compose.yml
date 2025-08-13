@@ -1,0 +1,331 @@
+services:
+  # Service Discovery
+  service-registry:
+    container_name: service-registry
+    build: ./services/discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # API Gateway
+  api-gateway:
+    container_name: api-gateway
+    build: ./gateway
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+    depends_on:
+      service-registry:
+        condition: service_healthy
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # MySQL databases
+  mb-movie-db:
+    image: mysql:8.0.40-oracle
+    container_name: movie-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mb_movie
+    ports:
+      - "3300:3306"
+    volumes:
+      - mb_movie_data:/var/lib/mysql
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  mb-user-db:
+    image: mysql:8.0.40-oracle
+    container_name: user-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mb_user
+    ports:
+      - "3302:3306"
+    volumes:
+      - mb_user_data:/var/lib/mysql
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  mb-payment-db:
+    image: mysql:8.0.40-oracle
+    container_name: payment-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mb_payment
+    ports:
+      - "3303:3306"
+    volumes:
+      - mb_payment_data:/var/lib/mysql
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  mb-booking-db:
+    image: mysql:8.0.40-oracle
+    container_name: booking-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mb_booking
+    ports:
+      - "3304:3306"
+    volumes:
+      - mb_booking_data:/var/lib/mysql
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  mb-notification-db:
+    image: mysql:8.0.40-oracle
+    container_name: notification-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mb_notification
+    ports:
+      - "3305:3306"
+    volumes:
+      - mb_notification_data:/var/lib/mysql
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  # DB initializer
+  db-initializer:
+    image: mysql:8.0.40-oracle
+    container_name: db-initializer
+    volumes:
+      - ./scripts:/scripts
+    command: "bash /scripts/init.sh"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      mb-movie-db:
+        condition: service_healthy
+      mb-user-db:
+        condition: service_healthy
+      mb-payment-db:
+        condition: service_healthy
+      mb-booking-db:
+        condition: service_healthy
+      mb-notification-db:
+        condition: service_healthy
+    networks:
+      - network
+    restart: no
+
+  # Microservices
+  movie-service:
+    container_name: movie-service
+    build: ./services/movie-service
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mb-movie-db:3306/mb_movie?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+    depends_on:
+      mb-movie-db:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  user-service:
+    container_name: user-service
+    build: ./services/user-service
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mb-user-db:3306/mb_user?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+    depends_on:
+      mb-user-db:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  payment-service:
+    container_name: payment-service
+    build: ./services/payment-service
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mb-payment-db:3306/mb_payment?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+    depends_on:
+      mb-payment-db:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  booking-service:
+    container_name: booking-service
+    build: ./services/booking-service
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mb-booking-db:3306/mb_booking?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+    depends_on:
+      mb-booking-db:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      movie-service:
+        condition: service_healthy
+      payment-service:
+        condition: service_healthy
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  notification-service:
+    container_name: notification-service
+    build: ./services/notification-service
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mb-notification-db:3306/mb_notification?useSSL=false&allowPublicKeyRetrieval=true
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+    depends_on:
+      mb-notification-db:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      booking-service:
+        condition: service_healthy
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # Angular frontend
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      service-registry:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      movie-service:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+      payment-service:
+        condition: service_healthy
+      booking-service:
+        condition: service_healthy
+      notification-service:
+        condition: service_healthy
+    networks:
+      - network
+    restart: unless-stopped
+
+# Networks
+networks:
+  network:
+    driver: bridge
+
+# Volumes
+volumes:
+  mb_movie_data:
+  mb_user_data:
+  mb_payment_data:
+  mb_booking_data:
+  mb_notification_data:

@@ -1,0 +1,12 @@
+CREATE DATABASE IF NOT EXISTS `mb_user` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT ENCRYPTION='N';
+USE `mb_user`;
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `fullname` varchar(255) NOT NULL,
+    `email` varchar(100) NOT NULL,
+    `phone` varchar(20) NOT NULL,
+    `password` varchar(255) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

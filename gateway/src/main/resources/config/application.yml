@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: api-gateway
+  profiles:
+    active: "@profiles.active@"
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true  # Automatically create routes from service discovery
+          lower-case-service-id: true
+      routes:
+        - id: customer-service
+          uri: lb://customer-service
+          predicates:
+            - Path=/api/customer-service/**
+          filters:
+            - RewritePath=/api/customer-service/(?<segment>.*), /api/${segment}
+
+        - id: movie-service
+          uri: lb://movie-service
+          predicates:
+            - Path=/api/movie-service/**
+          filters:
+            - RewritePath=/api/movie-service/(?<segment>.*), /api/${segment}
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notification-service/**
+          filters:
+            - RewritePath=/api/notification-service/(?<segment>.*), /api/${segment}
+
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payment-service/**
+          filters:
+            - RewritePath=/api/payment-service/(?<segment>.*), /api/${segment}
+
+        - id: seat-availability-service
+          uri: lb://seat-availability-service
+          predicates:
+            - Path=/api/seat-availability-service/**
+          filters:
+            - RewritePath=/api/seat-availability-service/(?<segment>.*), /api/${segment}
+
+        - id: ticket-booking-service
+          uri: lb://ticket-booking-service
+          predicates:
+            - Path=/api/ticket-booking-service/**
+          filters:
+            - RewritePath=/api/ticket-booking-service/(?<segment>.*), /api/${segment}
+
+        - id: ticket-booking-service-websocket
+          uri: lb:ws://ticket-booking-service
+          predicates:
+            - Path=/ws-booking
+            - Header=Upgrade, websocket
+
+  lifecycle:
+    timeout-per-shutdown-phase: 5s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+
+server:
+  port: 8080
+  shutdown: graceful
+
+app:
+  security:
+    jwt:
+      base64-secret-key: ZGN0LWJhc2Utc2VjcmV0LWtleS10b2tlbi12YWxpZGl0eS04NjQwMDAwMG1zLWZvci1yZW1lbWJlci1tZS04NjQwMDAwMG1z
+      validity: 3600000 # 1 hour
+      validity-for-remember: 604800000 # 7 days

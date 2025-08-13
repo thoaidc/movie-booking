@@ -1,0 +1,91 @@
+package vn.ptit.moviebooking.payment.entity;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.ZonedDateTime;
+
+@Entity
+@Table(name = "payment")
+@DynamicInsert
+@DynamicUpdate
+@SuppressWarnings({"unused", "JpaDataSourceORMInspection"})
+public class Payment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+
+    @Column(name = "booking_id", nullable = false)
+    private Integer bookingId;
+
+    @Column(name = "transaction_id", nullable = false)
+    private String transactionId;
+
+    @Column(name = "amount", nullable = false)
+    private Float amount;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "payment_time", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private ZonedDateTime paymentTime;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(Integer bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public Float getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Float amount) {
+        this.amount = amount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public ZonedDateTime getPaymentTime() {
+        return paymentTime;
+    }
+
+    public void setPaymentTime(ZonedDateTime paymentTime) {
+        this.paymentTime = paymentTime;
+    }
+}

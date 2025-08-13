@@ -1,0 +1,61 @@
+
+spring:
+  application:
+    name: customer-service
+  profiles:
+    active: "@profiles.active@"
+
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: false
+        jdbc:
+          time_zone: UTC
+          ddl-auto: validate
+        hibernate:
+          # Hibernate only checks if the current schema matches the entity
+          # If it does not match, the application will not start
+          # Do not make any changes to the schema
+          ddl-auto: validate
+  sql:
+    init:
+      mode: never
+
+  rabbitmq:
+    host: ${RABBIT_MQ_HOST}
+    virtual-host: ${RABBIT_MQ_VIRTUAL_HOST}
+    port: ${RABBIT_MQ_PORT}
+    username: ${RABBIT_MQ_USERNAME}
+    password: ${RABBIT_MQ_PASSWORD}
+    exchange:
+      direct: amq.direct
+    producer:
+      reply-timeout: 60000
+    consumer:
+      max-concurrent-consumer: 2
+      concurrent-consumer: 2
+      prefetch-count: 10
+    queues:
+      VERIFY_CUSTOMER_COMMAND:
+        name: queue.customers.command
+        routing-key: routingKey.customers.command
+      VERIFY_CUSTOMER_REPLY:
+        name: queue.customers.reply
+        routing-key: routingKey.customers.reply
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: db,ping
+  health:
+    db:
+      enabled: true
