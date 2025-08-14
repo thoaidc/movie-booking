@@ -9,16 +9,18 @@ spring:
     open-in-view: false
     properties:
       hibernate:
+        archive:
+          autodetection: class
         show_sql: true
         format_sql: false
         jdbc:
           time_zone: UTC
-          ddl-auto: validate
+          ddl-auto: update
         hibernate:
           # Hibernate only checks if the current schema matches the entity
           # If it does not match, the application will not start
           # Do not make any changes to the schema
-          ddl-auto: validate
+          ddl-auto: update
   sql:
     init:
       mode: never
@@ -37,55 +39,17 @@ spring:
       max-concurrent-consumer: 2
       concurrent-consumer: 2
       prefetch-count: 10
-    queues:
-      MOVIE_VALIDATE_COMMAND:
-        name: queue.movies.command
-        routing-key: routingKey.movies.command
-      MOVIE_VALIDATE_REPLY:
-        name: queue.movies.reply
-        routing-key: routingKey.movies.reply
-      CHECK_SEATS_AVAILABILITY_COMMAND:
-        name: queue.seats.availability.command
-        routing-key: routingKey.seats.availability.command
-      CHECK_SEATS_AVAILABILITY_REPLY:
-        name: queue.seats.availability.reply
-        routing-key: routingKey.seats.availability.reply
-      CONFIRM_SEATS_COMMAND:
-        name: queue.seats.confirm.command
-        routing-key: routingKey.seats.confirm.command
-      CONFIRM_SEATS_REPLY:
-        name: queue.seats.confirm.reply
-        routing-key: routingKey.seats.confirm.reply
-      RELEASED_SEATS_COMMAND:
-        name: queue.seats.released.command
-        routing-key: routingKey.seats.released.command
-      RELEASED_SEATS_REPLY:
-        name: queue.seats.released.reply
-        routing-key: routingKey.seats.released.reply
-      VERIFY_CUSTOMER_COMMAND:
-        name: queue.customers.command
-        routing-key: routingKey.customers.command
-      VERIFY_CUSTOMER_REPLY:
-        name: queue.customers.reply
-        routing-key: routingKey.customers.reply
-      PAYMENT_PROCESS_COMMAND:
-        name: queue.payments.process.command
-        routing-key: routingKey.payments.process.command
-      PAYMENT_REFUND_COMMAND:
-        name: queue.payments.refund.command
-        routing-key: routingKey.payments.refund.command
-      PAYMENT_PROCESS_REPLY:
-        name: queue.payments.process.reply
-        routing-key: routingKey.payments.process.reply
-      PAYMENT_REFUND_REPLY:
-        name: queue.payments.refund.reply
-        routing-key: routingKey.payments.refund.reply
-      NOTIFICATION_COMMAND:
-        name: queue.notifications.command
-        routing-key: routingKey.notifications.command
-      NOTIFICATION_REPLY:
-        name: queue.notifications.reply
-        routing-key: routingKey.notifications.reply
+
+axon:
+  axonserver:
+    servers: localhost:8124
+    enabled: true
+  eventhandling:
+    processors:
+      booking-saga:
+        mode: subscribing
+  amqp:
+    exchange: amq.direct
 
 management:
   endpoints:

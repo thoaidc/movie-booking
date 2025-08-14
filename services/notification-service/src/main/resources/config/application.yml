@@ -13,12 +13,12 @@ spring:
         format_sql: false
         jdbc:
           time_zone: UTC
-          ddl-auto: validate
+          ddl-auto: update
         hibernate:
           # Hibernate only checks if the current schema matches the entity
           # If it does not match, the application will not start
           # Do not make any changes to the schema
-          ddl-auto: validate
+          ddl-auto: update
   sql:
     init:
       mode: never
@@ -37,13 +37,6 @@ spring:
       max-concurrent-consumer: 2
       concurrent-consumer: 2
       prefetch-count: 10
-    queues:
-      NOTIFICATION_COMMAND:
-        name: queue.notifications.command
-        routing-key: routingKey.notifications.command
-      NOTIFICATION_REPLY:
-        name: queue.notifications.reply
-        routing-key: routingKey.notifications.reply
 
 management:
   endpoints:

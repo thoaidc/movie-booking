@@ -9,16 +9,18 @@ spring:
     open-in-view: false
     properties:
       hibernate:
+        archive:
+          autodetection: class
         show_sql: true
         format_sql: false
         jdbc:
           time_zone: UTC
-          ddl-auto: validate
+          ddl-auto: update
         hibernate:
           # Hibernate only checks if the current schema matches the entity
           # If it does not match, the application will not start
           # Do not make any changes to the schema
-          ddl-auto: validate
+          ddl-auto: update
   sql:
     init:
       mode: never
@@ -37,13 +39,17 @@ spring:
       max-concurrent-consumer: 2
       concurrent-consumer: 2
       prefetch-count: 10
-    queues:
-      MOVIE_VALIDATE_COMMAND:
-        name: queue.movies.command
-        routing-key: routingKey.movies.command
-      MOVIE_VALIDATE_REPLY:
-        name: queue.movies.reply
-        routing-key: routingKey.movies.reply
+
+axon:
+  axonserver:
+    servers: localhost:8124
+    enabled: true
+  eventhandling:
+    processors:
+      booking-saga:
+        mode: subscribing
+  amqp:
+    exchange: amq.direct
 
 management:
   endpoints:

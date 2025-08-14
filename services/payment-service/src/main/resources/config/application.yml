@@ -9,16 +9,18 @@ spring:
     open-in-view: false
     properties:
       hibernate:
+        archive:
+          autodetection: class
         show_sql: true
         format_sql: false
         jdbc:
           time_zone: UTC
-          ddl-auto: validate
+          ddl-auto: update
         hibernate:
           # Hibernate only checks if the current schema matches the entity
           # If it does not match, the application will not start
           # Do not make any changes to the schema
-          ddl-auto: validate
+          ddl-auto: update
   sql:
     init:
       mode: never
@@ -37,19 +39,17 @@ spring:
       max-concurrent-consumer: 2
       concurrent-consumer: 2
       prefetch-count: 10
-    queues:
-      PAYMENT_PROCESS_COMMAND:
-        name: queue.payments.process.command
-        routing-key: routingKey.payments.process.command
-      PAYMENT_REFUND_COMMAND:
-        name: queue.payments.refund.command
-        routing-key: routingKey.payments.refund.command
-      PAYMENT_PROCESS_REPLY:
-        name: queue.payments.process.reply
-        routing-key: routingKey.payments.process.reply
-      PAYMENT_REFUND_REPLY:
-        name: queue.payments.refund.reply
-        routing-key: routingKey.payments.refund.reply
+
+axon:
+  axonserver:
+    servers: localhost:8124
+    enabled: true
+  eventhandling:
+    processors:
+      booking-saga:
+        mode: subscribing
+  amqp:
+    exchange: amq.direct
 
 management:
   endpoints:

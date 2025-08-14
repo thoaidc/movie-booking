@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
@@ -15,6 +16,11 @@ import java.util.Optional;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@EntityScan(basePackages = {
+        "org.axonframework.modelling.saga.repository.jpa", // Axon saga entities
+        "org.axonframework.eventhandling.tokenstore.jpa",  // Token store entities
+        "vn.ptit.moviebooking.movie" // package code của bạn
+})
 public class MovieServiceApplication {
 
     private static final Logger log = LoggerFactory.getLogger(MovieServiceApplication.class);

@@ -1,5 +1,10 @@
 logging:
   level:
+    io.grpc.netty: warn
+    org.axonframework: info
+    org.hibernate.SQL: warn
+    org.hibernate.type.descriptor.sql.BasicBinder: warn
+    io.axoniq.axonserver.connector.impl.HeartbeatMonitor: WARN
     root: debug
     vn.ptit.moviebooking: debug
   charset:

@@ -4,7 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import vn.ptit.moviebooking.booking.constants.PropertiesConstants;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @Configuration
 @ConfigurationProperties(prefix = PropertiesConstants.RABBIT_MQ_PROPERTIES)
@@ -160,7 +162,7 @@ public class RabbitMQProperties {
     }
 
     public Map<String, QueueConfig> getQueues() {
-        return queues;
+        return Optional.ofNullable(queues).orElse(Collections.emptyMap());
     }
 
     public void setQueues(Map<String, QueueConfig> queues) {
