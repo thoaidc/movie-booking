@@ -31,25 +31,19 @@ spring:
     port: ${RABBIT_MQ_PORT}
     username: ${RABBIT_MQ_USERNAME}
     password: ${RABBIT_MQ_PASSWORD}
-    exchange:
-      direct: amq.direct
-    producer:
-      reply-timeout: 60000
-    consumer:
-      max-concurrent-consumer: 2
-      concurrent-consumer: 2
-      prefetch-count: 10
 
 axon:
-  axonserver:
-    servers: localhost:8124
+  axon-server:
+    servers: "localhost:8124"
     enabled: true
   eventhandling:
     processors:
       booking-saga:
         mode: subscribing
-  amqp:
-    exchange: amq.direct
+  messaging:
+    amqp:
+      exchange: axon
+      routing-key-prefix: ""
 
 management:
   endpoints:

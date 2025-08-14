@@ -4,6 +4,16 @@
       "name": "logging.file-path",
       "type": "java.lang.String",
       "description": "Description for logging.file-path."
+    },
+    {
+      "name": "axon.messaging.amqp.exchange",
+      "type": "java.lang.String",
+      "description": "Description for axon.messaging.amqp.exchange."
+    },
+    {
+      "name": "axon.messaging.amqp.routing-key-prefix",
+      "type": "java.lang.String",
+      "description": "Description for axon.messaging.amqp.routing-key-prefix."
     }
   ]
 }

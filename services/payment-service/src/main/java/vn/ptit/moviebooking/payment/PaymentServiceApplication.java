@@ -16,11 +16,6 @@ import java.util.Optional;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EntityScan(basePackages = {
-        "org.axonframework.modelling.saga.repository.jpa", // Axon saga entities
-        "org.axonframework.eventhandling.tokenstore.jpa",  // Token store entities
-        "vn.ptit.moviebooking.payment" // package code của bạn
-})
 public class PaymentServiceApplication {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentServiceApplication.class);

@@ -1,6 +1,8 @@
 package vn.ptit.moviebooking.booking.saga;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.config.ProcessingGroup;
+import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.SagaLifecycle;
 import org.axonframework.modelling.saga.StartSaga;
@@ -10,21 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Saga
+@ProcessingGroup("booking-saga")
 public class BookingSaga {
 
     @Autowired
-    private final CommandGateway commandGateway;
-
-    public BookingSaga(CommandGateway commandGateway) {
-        this.commandGateway = commandGateway;
-    }
+    private transient CommandGateway commandGateway;
 
     @StartSaga
     @SagaEventHandler(associationProperty = "bookingId")
     public void on(Event.BookingCreatedEvent event) {
         System.out.println("Start booking saga");
         SagaLifecycle.associateWith("bookingId", event.getBookingId());
-        commandGateway.send(new Command.ReserveSeatCommand(event.getBookingId(), event.getSeatIds(), event.getShowId()));
+        commandGateway.send(new Command.ReserveSeatCommand(event.getBookingId(), event.getSeatIds(), event.getShowId()))
+            .whenComplete((result, ex) -> {
+                System.out.println(result);
+
+                if (ex != null) {
+                    System.err.println("Command failed: " + ex.getMessage());
+                }
+            });
     }
 
     @SagaEventHandler(associationProperty = "bookingId")
