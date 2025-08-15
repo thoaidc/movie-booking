@@ -6,19 +6,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.ptit.moviebooking.movie.dto.response.BaseResponseDTO;
-import vn.ptit.moviebooking.movie.service.CheckSeatAvailabilityService;
 import vn.ptit.moviebooking.movie.service.MovieService;
+import vn.ptit.moviebooking.movie.service.SeatShowService;
 
 @RestController
 @RequestMapping("/api/p/seats")
 public class SeatResource {
 
     private final MovieService movieService;
-    private final CheckSeatAvailabilityService checkSeatAvailabilityService;
+    private final SeatShowService seatShowService;
 
-    public SeatResource(MovieService movieService, CheckSeatAvailabilityService checkSeatAvailabilityService) {
+    public SeatResource(MovieService movieService, SeatShowService seatShowService) {
         this.movieService = movieService;
-        this.checkSeatAvailabilityService = checkSeatAvailabilityService;
+        this.seatShowService = seatShowService;
     }
 
     @GetMapping("/by-show/{showId}")
@@ -28,6 +28,6 @@ public class SeatResource {
 
     @GetMapping("/by-show2/{showId}")
     public BaseResponseDTO getAllSeatsOfShow(@PathVariable Integer showId) {
-        return checkSeatAvailabilityService.getAllSeatsOfShow(showId);
+        return seatShowService.getAllSeatsOfShow(showId);
     }
 }

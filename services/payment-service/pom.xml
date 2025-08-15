@@ -55,21 +55,8 @@
             <artifactId>axon-spring-boot-starter</artifactId>
             <version>4.9.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.axonframework</groupId>-->
-<!--            <artifactId>axon-server-connector</artifactId>-->
-<!--            <version>4.9.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.axonframework.extensions.amqp</groupId>-->
-<!--            <artifactId>axon-amqp-spring-boot-starter</artifactId>-->
-<!--            <version>4.9.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.axonframework.extensions.springcloud</groupId>-->
-<!--            <artifactId>axon-springcloud-spring-boot-starter</artifactId>-->
-<!--            <version>4.9.0</version>-->
-<!--        </dependency>-->
+
+<!--    docker run -d -name axon-server -p 8024:8024 -p 8124:8124  axoniq/axonserver:latest-jdk-17-dev    -->
 
         <dependency>
             <groupId>com.google.guava</groupId>

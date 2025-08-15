@@ -81,7 +81,5 @@ CREATE TABLE snapshot_event_entry (
     UNIQUE KEY uq_snapshot_event_identifier (event_identifier)
 );
 
-CREATE TABLE association_value_entry_seq (
-                                             next_val BIGINT
-);
+CREATE TABLE association_value_entry_seq (next_val BIGINT);
 INSERT INTO association_value_entry_seq VALUES (1);

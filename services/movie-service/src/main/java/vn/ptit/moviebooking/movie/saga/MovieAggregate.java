@@ -11,21 +11,32 @@ import org.springframework.beans.BeanUtils;
 import vn.ptit.moviebooking.common.Command;
 import vn.ptit.moviebooking.common.Event;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Aggregate
 public class MovieAggregate {
 
     @AggregateIdentifier
     private String seatReservationId;
     private final Logger logger = LoggerFactory.getLogger(MovieAggregate.class);
+    private static final Set<Integer> seats = new HashSet<>();
 
     protected MovieAggregate() {}
 
     @CommandHandler
     public MovieAggregate(Command.ReserveSeatCommand cmd) {
-        Event.ReserveSeatEvent reserveSeatEvent = new Event.ReserveSeatEvent();
-        BeanUtils.copyProperties(cmd, reserveSeatEvent);
-        AggregateLifecycle.apply(reserveSeatEvent);
-        logger.debug("Giữ ghế thành công: {} - {}", reserveSeatEvent.getSeatReservationId(), reserveSeatEvent.getSeatIds());
+        if (seats.containsAll(cmd.getSeatIds())) {
+            Event.CancelSeatEvent cancelSeatEvent = new Event.CancelSeatEvent();
+            BeanUtils.copyProperties(cmd, cancelSeatEvent);
+            AggregateLifecycle.apply(cancelSeatEvent);
+            logger.debug("Ghế đã bị giữ bởi người khác: {} - {}", cancelSeatEvent.getSeatReservationId(), cancelSeatEvent.getSeatIds());
+        } else {
+            Event.ReserveSeatEvent reserveSeatEvent = new Event.ReserveSeatEvent();
+            BeanUtils.copyProperties(cmd, reserveSeatEvent);
+            AggregateLifecycle.apply(reserveSeatEvent);
+            logger.debug("Giữ ghế thành công: {} - {}", reserveSeatEvent.getSeatReservationId(), reserveSeatEvent.getSeatIds());
+        }
     }
 
     @CommandHandler
@@ -39,14 +50,14 @@ public class MovieAggregate {
     @EventSourcingHandler
     public void on(Event.ReserveSeatEvent event) {
         this.seatReservationId = event.getSeatReservationId();
+        seats.addAll(event.getSeatIds());
         logger.debug("Giữ ghế event: {} - {}", event.getSeatReservationId(), event.getSeatIds());
-        // Update DB
     }
 
     @EventSourcingHandler
     public void on(Event.CancelSeatEvent event) {
         this.seatReservationId = event.getSeatReservationId();
+        event.getSeatIds().forEach(seats::remove);
         logger.debug("Hủy giữ ghế event: {} - {}", event.getSeatReservationId(), event.getSeatIds());
-        // Update DB
     }
 }
