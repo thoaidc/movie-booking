@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.ptit.moviebooking.booking.dto.request.BookingRequest;
-import vn.ptit.moviebooking.booking.saga.Command;
+import vn.ptit.moviebooking.common.Command;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import vn.ptit.moviebooking.movie.config.CRLFLogConverter;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@ComponentScan(basePackages = {"vn.ptit.moviebooking.common", "vn.ptit.moviebooking.movie"})
 public class MovieServiceApplication {
 
     private static final Logger log = LoggerFactory.getLogger(MovieServiceApplication.class);

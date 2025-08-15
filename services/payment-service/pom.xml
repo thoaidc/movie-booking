@@ -71,7 +71,11 @@
             <artifactId>guava</artifactId>
             <version>32.1.3-jre</version>
         </dependency>
-
+        <dependency>
+            <groupId>vn.ptit.moviebooking</groupId>
+            <artifactId>common</artifactId>
+            <version>0.0.1</version>
+        </dependency>
 
         <!-- Eureka Client -->
         <dependency>

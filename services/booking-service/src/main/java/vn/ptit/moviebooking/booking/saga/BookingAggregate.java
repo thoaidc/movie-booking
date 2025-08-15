@@ -4,8 +4,11 @@ import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
-import org.axonframework.modelling.command.CreationPolicy;
 import org.axonframework.spring.stereotype.Aggregate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import vn.ptit.moviebooking.common.Command;
+import vn.ptit.moviebooking.common.Event;
 
 @Aggregate
 public class BookingAggregate {
@@ -13,43 +16,53 @@ public class BookingAggregate {
     @AggregateIdentifier
     private String bookingId;
     private String status;
+    private final Logger logger = LoggerFactory.getLogger(BookingAggregate.class);
 
     protected BookingAggregate() {}
 
     @CommandHandler
     public BookingAggregate(Command.CreateBookingCommand cmd) {
-        System.out.println("Tạo đơn hàng");
+        logger.debug("Tạo đơn hàng");
+        System.out.println(": " + cmd.getBookingId());
         AggregateLifecycle.apply(new Event.BookingCreatedEvent(cmd.getBookingId(), cmd.getSeatIds(), cmd.getShowId(), cmd.getAmount()));
     }
 
     @EventSourcingHandler
     public void on(Event.BookingCreatedEvent event) {
-        System.out.println("Tạo đơn hàng event");
+        logger.debug("Tạo đơn hàng event");
         this.bookingId = event.getBookingId();
         this.status = "PENDING";
     }
 
     @CommandHandler
     public void handle(Command.MarkBookingConfirmedCommand cmd) {
-        System.out.println("Xác nhận đơn hàng");
+        logger.debug("Xác nhận đơn hàng");
         AggregateLifecycle.apply(new Event.BookingConfirmedEvent(cmd.getBookingId()));
     }
 
     @CommandHandler
     public void handle(Command.MarkBookingFailedCommand cmd) {
-        System.out.println("Xác nhận đơn hàng thất bại");
+        logger.debug("Xác nhận đơn hàng thất bại");
         AggregateLifecycle.apply(new Event.BookingFailedEvent(cmd.getBookingId(), cmd.getReason()));
     }
 
     @EventSourcingHandler
     public void on(Event.BookingConfirmedEvent event) {
         this.status = "CONFIRMED";
-        System.out.println("Xác nhận đơn hàng event");
+        logger.debug("Xác nhận đơn hàng event");
     }
 
     @EventSourcingHandler
     public void on(Event.BookingFailedEvent event) {
         this.status = "FAILED";
-        System.out.println("Hủy đơn hàng event");
+        logger.debug("Hủy đơn hàng event");
+    }
+
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 }
