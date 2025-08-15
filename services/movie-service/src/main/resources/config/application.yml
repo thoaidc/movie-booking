@@ -33,17 +33,15 @@ spring:
     password: ${RABBIT_MQ_PASSWORD}
 
 axon:
-  axon-server:
-    servers: "localhost:8124"
-    enabled: true
   eventhandling:
     processors:
       booking-saga:
-        mode: subscribing
-  messaging:
-    amqp:
-      exchange: axon
-      routing-key-prefix: ""
+        mode: tracking
+#  messaging:
+#    amqp:
+#      exchange: axon
+#      routing-key-prefix: ""
+
 management:
   endpoints:
     web:

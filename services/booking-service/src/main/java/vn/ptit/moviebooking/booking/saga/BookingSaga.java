@@ -2,6 +2,7 @@ package vn.ptit.moviebooking.booking.saga;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.config.ProcessingGroup;
+import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.SagaLifecycle;
 import org.axonframework.modelling.saga.StartSaga;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import vn.ptit.moviebooking.common.Command;
 import vn.ptit.moviebooking.common.Event;
 
-import java.util.List;
 import java.util.UUID;
 
 @Saga
@@ -23,52 +23,71 @@ public class BookingSaga {
     private transient CommandGateway commandGateway;
     private final Logger logger = LoggerFactory.getLogger(BookingSaga.class);
 
+    public BookingSaga() {}
+
     @StartSaga
     @SagaEventHandler(associationProperty = "bookingId")
-    public void on(Event.BookingCreatedEvent event) {
-        logger.debug("Start booking saga");
+    public void on(Event.CreateBookingEvent event) {
         String seatReservationId = UUID.randomUUID().toString();
-        SagaLifecycle.associateWith("bookingId", event.getBookingId());
-        commandGateway.send(new Command.ReserveSeatCommand(
-                seatReservationId,
-                event.getSeatIds(),
-                event.getShowId()
-            ))
-            .whenComplete((result, ex) -> {
-                logger.debug("Send to movie service: {} - {}", result, seatReservationId);
-
-                if (ex != null) {
-                    System.err.println("Command failed: " + ex.getMessage());
-                }
-            });
+        SagaLifecycle.associateWith("seatReservationId", seatReservationId);
+        Command.ReserveSeatCommand reserveSeatCommand = new Command.ReserveSeatCommand();
+        reserveSeatCommand.setBookingId(event.getBookingId());
+        reserveSeatCommand.setSeatReservationId(seatReservationId);
+        reserveSeatCommand.setSeatIds(event.getSeatIds());
+        commandGateway.send(reserveSeatCommand);
+        logger.debug("Handle create booking saga with bookingId: {} - reserveSeatCommandId: {}", event.getBookingId(), reserveSeatCommand);
     }
 
     @SagaEventHandler(associationProperty = "seatReservationId")
-    public void on(Event.SeatReservedEvent event) {
-        String paymenID = UUID.randomUUID().toString();
-        logger.debug("Thanh toán command");
-        commandGateway.send(new Command.ProcessPaymentCommand(paymenID, 1000.334f));
+    public void handle(Event.ReserveSeatEvent event) {
+        String paymentId = UUID.randomUUID().toString();
+        SagaLifecycle.associateWith("paymentId", paymentId);
+        Command.ProcessPaymentCommand processPaymentCommand = new Command.ProcessPaymentCommand();
+        processPaymentCommand.setBookingId(event.getBookingId());
+        processPaymentCommand.setPaymentId(paymentId);
+        processPaymentCommand.setAmount(event.getAmount());
+        commandGateway.send(processPaymentCommand);
+        logger.debug("Handle reserve seats success: {}, send payment command: {}", event.getSeatReservationId(), paymentId);
     }
 
     @SagaEventHandler(associationProperty = "seatReservationId")
-    public void on(Event.SeatReservationFailedEvent event) {
-        logger.debug("Giữ ghế thất bại command");
-//        commandGateway.send(new Command.MarkBookingFailedCommand(event.getBookingId(), event.getReason()));
-        SagaLifecycle.end();
+    public void handle(Event.CancelSeatEvent event) {
+        Command.MarkBookingFailedCommand bookingFailedCommand = new Command.MarkBookingFailedCommand();
+        bookingFailedCommand.setBookingId(event.getBookingId());
+        bookingFailedCommand.setReason("Giữ ghế thất bại");
+        commandGateway.send(bookingFailedCommand);
+        logger.debug("Handle reserve seats failed: {}, send cancel order command: {}", event.getSeatReservationId(), event.getBookingId());
     }
 
     @SagaEventHandler(associationProperty = "paymentId")
-    public void on(Event.PaymentCompletedEvent event) {
-        logger.debug("Thanh toán thành công command");
-        commandGateway.send(new Command.MarkBookingConfirmedCommand());
-        SagaLifecycle.end();
+    public void handle(Event.ProcessPaymentEvent event) {
+        Command.MarkBookingSuccessCommand bookingSuccessCommand = new Command.MarkBookingSuccessCommand();
+        bookingSuccessCommand.setBookingId(event.getBookingId());
+        commandGateway.send(bookingSuccessCommand);
+        logger.debug("Handle payment success event: {}, send success booking command: {}", event.getPaymentId(), event.getBookingId());
     }
 
     @SagaEventHandler(associationProperty = "paymentId")
-    public void on(Event.PaymentFailedEvent event) {
-        logger.debug("Thanh toán thất bại command");
-        commandGateway.send(new Command.CancelSeatCommand("", List.of(1, 3)));
-        commandGateway.send(new Command.MarkBookingFailedCommand());
-        SagaLifecycle.end();
+    public void handle(Event.RefundEvent event) {
+        Command.CancelSeatCommand cancelSeatCommand = new Command.CancelSeatCommand();
+        cancelSeatCommand.setBookingId(event.getBookingId());
+        Command.MarkBookingFailedCommand bookingFailedCommand = new Command.MarkBookingFailedCommand();
+        bookingFailedCommand.setBookingId(event.getBookingId());
+        bookingFailedCommand.setReason("Thanh toán thất bại");
+        commandGateway.send(cancelSeatCommand);
+        commandGateway.send(bookingFailedCommand);
+        logger.debug("Handle payment failed: {}, send cancel order command: {}", event.getPaymentId(), event.getBookingId());
+    }
+
+    @SagaEventHandler(associationProperty = "bookingId")
+    @EndSaga
+    public void handle(Event.MarkBookingSuccessEvent event) {
+        System.out.println("Booking successfully! End Saga.");
+    }
+
+    @SagaEventHandler(associationProperty = "bookingId")
+    @EndSaga
+    public void handle(Event.MarkBookingFailedEvent event) {
+        System.out.println("Booking failed! End Saga.");
     }
 }

@@ -10,62 +10,41 @@ public class Command {
     public static class CreateBookingCommand {
         @TargetAggregateIdentifier
         private String bookingId;
+        private Float totalAmount;
         private List<Integer> seatIds;
-        private Integer showId;
-        private Float amount;
 
-        public CreateBookingCommand() {
-        }
-
-        public CreateBookingCommand(String bookingId, List<Integer> seatIds, Integer showId, Float amount) {
-            this.bookingId = bookingId;
-            this.seatIds = seatIds;
-            this.showId = showId;
-            this.amount = amount;
-        }
+        public CreateBookingCommand() {}
 
         public String getBookingId() {
             return bookingId;
-        }
-
-        public List<Integer> getSeatIds() {
-            return seatIds;
-        }
-
-        public Integer getShowId() {
-            return showId;
-        }
-
-        public Float getAmount() {
-            return amount;
         }
 
         public void setBookingId(String bookingId) {
             this.bookingId = bookingId;
         }
 
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
+
+        public List<Integer> getSeatIds() {
+            return seatIds;
+        }
+
         public void setSeatIds(List<Integer> seatIds) {
             this.seatIds = seatIds;
         }
-
-        public void setShowId(Integer showId) {
-            this.showId = showId;
-        }
-
-        public void setAmount(Float amount) {
-            this.amount = amount;
-        }
     }
 
-    public static class MarkBookingConfirmedCommand {
+    public static class MarkBookingSuccessCommand {
         @TargetAggregateIdentifier
         private String bookingId;
 
-        public MarkBookingConfirmedCommand() {
-        }
-
-        public MarkBookingConfirmedCommand(String bookingId) {
-            this.bookingId = bookingId;
+        public MarkBookingSuccessCommand() {
         }
 
         public String getBookingId() {
@@ -85,21 +64,16 @@ public class Command {
         public MarkBookingFailedCommand() {
         }
 
-        public MarkBookingFailedCommand(String bookingId, String reason) {
-            this.bookingId = bookingId;
-            this.reason = reason;
-        }
-
         public String getBookingId() {
             return bookingId;
         }
 
-        public String getReason() {
-            return reason;
-        }
-
         public void setBookingId(String bookingId) {
             this.bookingId = bookingId;
+        }
+
+        public String getReason() {
+            return reason;
         }
 
         public void setReason(String reason) {
@@ -111,16 +85,10 @@ public class Command {
     public static class ReserveSeatCommand {
         @TargetAggregateIdentifier
         private String seatReservationId;
+        private String bookingId;
         private List<Integer> seatIds;
-        private Integer showId;
 
         public ReserveSeatCommand() {
-        }
-
-        public ReserveSeatCommand(String seatReservationId, List<Integer> seatIds, Integer showId) {
-            this.seatReservationId = seatReservationId;
-            this.seatIds = seatIds;
-            this.showId = showId;
         }
 
         public String getSeatReservationId() {
@@ -129,36 +97,32 @@ public class Command {
 
         public void setSeatReservationId(String seatReservationId) {
             this.seatReservationId = seatReservationId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
         }
 
         public List<Integer> getSeatIds() {
             return seatIds;
         }
 
-        public Integer getShowId() {
-            return showId;
-        }
-
         public void setSeatIds(List<Integer> seatIds) {
             this.seatIds = seatIds;
-        }
-
-        public void setShowId(Integer showId) {
-            this.showId = showId;
         }
     }
 
     public static class CancelSeatCommand {
         @TargetAggregateIdentifier
         private String seatReservationId;
+        private String bookingId;
         private List<Integer> seatIds;
 
         public CancelSeatCommand() {
-        }
-
-        public CancelSeatCommand(String seatReservationId, List<Integer> seatIds) {
-            this.seatReservationId = seatReservationId;
-            this.seatIds = seatIds;
         }
 
         public String getSeatReservationId() {
@@ -167,6 +131,14 @@ public class Command {
 
         public void setSeatReservationId(String seatReservationId) {
             this.seatReservationId = seatReservationId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
         }
 
         public List<Integer> getSeatIds() {
@@ -182,14 +154,10 @@ public class Command {
     public static class ProcessPaymentCommand {
         @TargetAggregateIdentifier
         private String paymentId;
+        private String bookingId;
         private Float amount;
 
         public ProcessPaymentCommand() {
-        }
-
-        public ProcessPaymentCommand(String paymentId, Float amount) {
-            this.paymentId = paymentId;
-            this.amount = amount;
         }
 
         public String getPaymentId() {
@@ -198,6 +166,48 @@ public class Command {
 
         public void setPaymentId(String paymentId) {
             this.paymentId = paymentId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public Float getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Float amount) {
+            this.amount = amount;
+        }
+    }
+
+    public static class RefundCommand {
+        @TargetAggregateIdentifier
+        private String paymentId;
+        private String bookingId;
+        private Float amount;
+
+        public RefundCommand() {
+        }
+
+        public String getPaymentId() {
+            return paymentId;
+        }
+
+        public void setPaymentId(String paymentId) {
+            this.paymentId = paymentId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
         }
 
         public Float getAmount() {

@@ -25,8 +25,11 @@ public class BookingController {
     @PostMapping
     public CompletableFuture<String> createBooking(@RequestBody BookingRequest req) {
         String bookingId = UUID.randomUUID().toString();
-        return commandGateway.send(new Command.CreateBookingCommand(
-            bookingId, req.getSeatIds(), req.getShowId(), req.getTotalAmount()
-        ));
+        Command.CreateBookingCommand createBookingCommand = new Command.CreateBookingCommand();
+        createBookingCommand.setBookingId(bookingId);
+        createBookingCommand.setSeatIds(req.getSeatIds());
+        createBookingCommand.setTotalAmount(req.getTotalAmount());
+        System.out.println("Create new booking: " + bookingId);
+        return commandGateway.send(createBookingCommand);
     }
 }

@@ -7,57 +7,46 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import vn.ptit.moviebooking.common.Command;
 import vn.ptit.moviebooking.common.Event;
 
-import java.util.UUID;
-
 @Aggregate
 public class MovieAggregate {
-    @AggregateIdentifier
-    private String seatReservationId; // Đổi từ bookingId thành seatReservationId
-//    private String bookingId; // Giữ bookingId như một thuộc tính bình thường
 
+    @AggregateIdentifier
+    private String seatReservationId;
     private final Logger logger = LoggerFactory.getLogger(MovieAggregate.class);
 
     protected MovieAggregate() {}
 
     @CommandHandler
     public MovieAggregate(Command.ReserveSeatCommand cmd) {
-        boolean available = true; // Check DB thực tế
-
-        logger.debug("Giữ ghế thành công");
-        System.out.println(": " + cmd.getSeatReservationId());
-
-        if (available) {
-            // Tạo unique ID cho seat reservation
-            AggregateLifecycle.apply(new Event.SeatReservedEvent(
-                    cmd.getSeatReservationId()
-            ));
-        } else {
-            AggregateLifecycle.apply(new Event.SeatReservationFailedEvent(
-                    cmd.getSeatReservationId(), "Seat not available"
-            ));
-        }
-    }
-
-    @EventSourcingHandler
-    public void on(Event.SeatReservedEvent event) {
-        this.seatReservationId = event.getSeatReservationId();
-        logger.debug("Phát hành ghế event");
+        Event.ReserveSeatEvent reserveSeatEvent = new Event.ReserveSeatEvent();
+        BeanUtils.copyProperties(cmd, reserveSeatEvent);
+        AggregateLifecycle.apply(reserveSeatEvent);
+        logger.debug("Giữ ghế thành công: {} - {}", reserveSeatEvent.getSeatReservationId(), reserveSeatEvent.getSeatIds());
     }
 
     @CommandHandler
     public void handle(Command.CancelSeatCommand cmd) {
-        // Update DB set ghế trống
-        logger.debug("Hủy giữ ghế, ghế trống trở lại: " + cmd.getSeatIds());
+        Event.CancelSeatEvent cancelSeatEvent = new Event.CancelSeatEvent();
+        BeanUtils.copyProperties(cmd, cancelSeatEvent);
+        AggregateLifecycle.apply(cancelSeatEvent);
+        logger.debug("Hủy giữ ghế: {} - {}", cancelSeatEvent.getSeatReservationId(), cancelSeatEvent.getSeatIds());
     }
 
-    public String getSeatReservationId() {
-        return seatReservationId;
+    @EventSourcingHandler
+    public void on(Event.ReserveSeatEvent event) {
+        this.seatReservationId = event.getSeatReservationId();
+        logger.debug("Giữ ghế event: {} - {}", event.getSeatReservationId(), event.getSeatIds());
+        // Update DB
     }
 
-    public void setSeatReservationId(String seatReservationId) {
-        this.seatReservationId = seatReservationId;
+    @EventSourcingHandler
+    public void on(Event.CancelSeatEvent event) {
+        this.seatReservationId = event.getSeatReservationId();
+        logger.debug("Hủy giữ ghế event: {} - {}", event.getSeatReservationId(), event.getSeatIds());
+        // Update DB
     }
 }

@@ -5,63 +5,42 @@ import java.util.List;
 public class Event {
 
     // Booking
-    public static class BookingCreatedEvent {
+    public static class CreateBookingEvent {
         private String bookingId;
+        private Float totalAmount;
         private List<Integer> seatIds;
-        private Integer showId;
-        private Float amount;
 
-        public BookingCreatedEvent() {
-        }
-
-        public BookingCreatedEvent(String bookingId, List<Integer> seatIds, Integer showId, Float amount) {
-            this.bookingId = bookingId;
-            this.seatIds = seatIds;
-            this.showId = showId;
-            this.amount = amount;
-        }
+        public CreateBookingEvent() {}
 
         public String getBookingId() {
             return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
         }
 
         public List<Integer> getSeatIds() {
             return seatIds;
         }
 
-        public Integer getShowId() {
-            return showId;
-        }
-
-        public Float getAmount() {
-            return amount;
-        }
-
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
-        }
-
         public void setSeatIds(List<Integer> seatIds) {
             this.seatIds = seatIds;
         }
-
-        public void setShowId(Integer showId) {
-            this.showId = showId;
-        }
-
-        public void setAmount(Float amount) {
-            this.amount = amount;
-        }
     }
 
-    public static class BookingConfirmedEvent {
+    public static class MarkBookingSuccessEvent {
         private String bookingId;
 
-        public BookingConfirmedEvent() {
-        }
-
-        public BookingConfirmedEvent(String bookingId) {
-            this.bookingId = bookingId;
+        public MarkBookingSuccessEvent() {
         }
 
         public String getBookingId() {
@@ -73,28 +52,23 @@ public class Event {
         }
     }
 
-    public static class BookingFailedEvent {
+    public static class MarkBookingFailedEvent {
         private String bookingId;
         private String reason;
 
-        public BookingFailedEvent() {
-        }
-
-        public BookingFailedEvent(String bookingId, String reason) {
-            this.bookingId = bookingId;
-            this.reason = reason;
+        public MarkBookingFailedEvent() {
         }
 
         public String getBookingId() {
             return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
         }
 
         public String getReason() {
             return reason;
-        }
-
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
         }
 
         public void setReason(String reason) {
@@ -103,8 +77,22 @@ public class Event {
     }
 
     // Movie
-    public static class SeatReservedEvent {
+    public static class ReserveSeatEvent {
         private String seatReservationId;
+        private String bookingId;
+        private Float amount;
+        private List<Integer> seatIds;
+
+        public ReserveSeatEvent() {
+        }
+
+        public Float getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Float amount) {
+            this.amount = amount;
+        }
 
         public String getSeatReservationId() {
             return seatReservationId;
@@ -114,24 +102,29 @@ public class Event {
             this.seatReservationId = seatReservationId;
         }
 
-        public SeatReservedEvent() {
+        public String getBookingId() {
+            return bookingId;
         }
 
-        public SeatReservedEvent(String seatReservationId) {
-            this.seatReservationId = seatReservationId;
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public List<Integer> getSeatIds() {
+            return seatIds;
+        }
+
+        public void setSeatIds(List<Integer> seatIds) {
+            this.seatIds = seatIds;
         }
     }
 
-    public static class SeatReservationFailedEvent {
+    public static class CancelSeatEvent {
         private String seatReservationId;
-        private String reason;
+        private String bookingId;
+        private List<Integer> seatIds;
 
-        public SeatReservationFailedEvent() {
-        }
-
-        public SeatReservationFailedEvent(String seatReservationId, String reason) {
-            this.seatReservationId = seatReservationId;
-            this.reason = reason;
+        public CancelSeatEvent() {
         }
 
         public String getSeatReservationId() {
@@ -142,24 +135,30 @@ public class Event {
             this.seatReservationId = seatReservationId;
         }
 
-        public String getReason() {
-            return reason;
+        public String getBookingId() {
+            return bookingId;
         }
 
-        public void setReason(String reason) {
-            this.reason = reason;
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public List<Integer> getSeatIds() {
+            return seatIds;
+        }
+
+        public void setSeatIds(List<Integer> seatIds) {
+            this.seatIds = seatIds;
         }
     }
 
     // Payment
-    public static class PaymentCompletedEvent {
+    public static class ProcessPaymentEvent {
         private String paymentId;
+        private String bookingId;
+        private Float amount;
 
-        public PaymentCompletedEvent() {
-        }
-
-        public PaymentCompletedEvent(String paymentId) {
-            this.paymentId = paymentId;
+        public ProcessPaymentEvent() {
         }
 
         public String getPaymentId() {
@@ -168,19 +167,31 @@ public class Event {
 
         public void setPaymentId(String paymentId) {
             this.paymentId = paymentId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public Float getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Float amount) {
+            this.amount = amount;
         }
     }
 
-    public static class PaymentFailedEvent {
+    public static class RefundEvent {
         private String paymentId;
-        private String reason;
+        private String bookingId;
+        private Float amount;
 
-        public PaymentFailedEvent() {
-        }
-
-        public PaymentFailedEvent(String paymentId, String reason) {
-            this.paymentId = paymentId;
-            this.reason = reason;
+        public RefundEvent() {
         }
 
         public String getPaymentId() {
@@ -191,12 +202,20 @@ public class Event {
             this.paymentId = paymentId;
         }
 
-        public String getReason() {
-            return reason;
+        public String getBookingId() {
+            return bookingId;
         }
 
-        public void setReason(String reason) {
-            this.reason = reason;
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public Float getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Float amount) {
+            this.amount = amount;
         }
     }
 }
