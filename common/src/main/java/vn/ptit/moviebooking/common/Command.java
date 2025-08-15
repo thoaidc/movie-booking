@@ -1,4 +1,4 @@
-package vn.ptit.moviebooking.payment.saga;
+package vn.ptit.moviebooking.common;
 
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
@@ -110,21 +110,25 @@ public class Command {
     // Movie
     public static class ReserveSeatCommand {
         @TargetAggregateIdentifier
-        private String bookingId;
+        private String seatReservationId;
         private List<Integer> seatIds;
         private Integer showId;
 
         public ReserveSeatCommand() {
         }
 
-        public ReserveSeatCommand(String bookingId, List<Integer> seatIds, Integer showId) {
-            this.bookingId = bookingId;
+        public ReserveSeatCommand(String seatReservationId, List<Integer> seatIds, Integer showId) {
+            this.seatReservationId = seatReservationId;
             this.seatIds = seatIds;
             this.showId = showId;
         }
 
-        public String getBookingId() {
-            return bookingId;
+        public String getSeatReservationId() {
+            return seatReservationId;
+        }
+
+        public void setSeatReservationId(String seatReservationId) {
+            this.seatReservationId = seatReservationId;
         }
 
         public List<Integer> getSeatIds() {
@@ -133,10 +137,6 @@ public class Command {
 
         public Integer getShowId() {
             return showId;
-        }
-
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
         }
 
         public void setSeatIds(List<Integer> seatIds) {
@@ -150,27 +150,27 @@ public class Command {
 
     public static class CancelSeatCommand {
         @TargetAggregateIdentifier
-        private String bookingId;
+        private String seatReservationId;
         private List<Integer> seatIds;
 
         public CancelSeatCommand() {
         }
 
-        public CancelSeatCommand(String bookingId, List<Integer> seatIds) {
-            this.bookingId = bookingId;
+        public CancelSeatCommand(String seatReservationId, List<Integer> seatIds) {
+            this.seatReservationId = seatReservationId;
             this.seatIds = seatIds;
         }
 
-        public String getBookingId() {
-            return bookingId;
+        public String getSeatReservationId() {
+            return seatReservationId;
+        }
+
+        public void setSeatReservationId(String seatReservationId) {
+            this.seatReservationId = seatReservationId;
         }
 
         public List<Integer> getSeatIds() {
             return seatIds;
-        }
-
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
         }
 
         public void setSeatIds(List<Integer> seatIds) {
@@ -181,27 +181,27 @@ public class Command {
     // Payment
     public static class ProcessPaymentCommand {
         @TargetAggregateIdentifier
-        private String bookingId;
+        private String paymentId;
         private Float amount;
 
         public ProcessPaymentCommand() {
         }
 
-        public ProcessPaymentCommand(String bookingId, Float amount) {
-            this.bookingId = bookingId;
+        public ProcessPaymentCommand(String paymentId, Float amount) {
+            this.paymentId = paymentId;
             this.amount = amount;
         }
 
-        public String getBookingId() {
-            return bookingId;
+        public String getPaymentId() {
+            return paymentId;
+        }
+
+        public void setPaymentId(String paymentId) {
+            this.paymentId = paymentId;
         }
 
         public Float getAmount() {
             return amount;
-        }
-
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
         }
 
         public void setAmount(Float amount) {

@@ -1,4 +1,4 @@
-package vn.ptit.moviebooking.payment.saga;
+package vn.ptit.moviebooking.common;
 
 import java.util.List;
 
@@ -104,46 +104,46 @@ public class Event {
 
     // Movie
     public static class SeatReservedEvent {
-        private String bookingId;
+        private String seatReservationId;
+
+        public String getSeatReservationId() {
+            return seatReservationId;
+        }
+
+        public void setSeatReservationId(String seatReservationId) {
+            this.seatReservationId = seatReservationId;
+        }
 
         public SeatReservedEvent() {
         }
 
-        public SeatReservedEvent(String bookingId) {
-            this.bookingId = bookingId;
-        }
-
-        public String getBookingId() {
-            return bookingId;
-        }
-
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
+        public SeatReservedEvent(String seatReservationId) {
+            this.seatReservationId = seatReservationId;
         }
     }
 
     public static class SeatReservationFailedEvent {
-        private String bookingId;
+        private String seatReservationId;
         private String reason;
 
         public SeatReservationFailedEvent() {
         }
 
-        public SeatReservationFailedEvent(String bookingId, String reason) {
-            this.bookingId = bookingId;
+        public SeatReservationFailedEvent(String seatReservationId, String reason) {
+            this.seatReservationId = seatReservationId;
             this.reason = reason;
         }
 
-        public String getBookingId() {
-            return bookingId;
+        public String getSeatReservationId() {
+            return seatReservationId;
+        }
+
+        public void setSeatReservationId(String seatReservationId) {
+            this.seatReservationId = seatReservationId;
         }
 
         public String getReason() {
             return reason;
-        }
-
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
         }
 
         public void setReason(String reason) {
@@ -153,46 +153,46 @@ public class Event {
 
     // Payment
     public static class PaymentCompletedEvent {
-        private String bookingId;
+        private String paymentId;
 
         public PaymentCompletedEvent() {
         }
 
-        public PaymentCompletedEvent(String bookingId) {
-            this.bookingId = bookingId;
+        public PaymentCompletedEvent(String paymentId) {
+            this.paymentId = paymentId;
         }
 
-        public String getBookingId() {
-            return bookingId;
+        public String getPaymentId() {
+            return paymentId;
         }
 
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
+        public void setPaymentId(String paymentId) {
+            this.paymentId = paymentId;
         }
     }
 
     public static class PaymentFailedEvent {
-        private String bookingId;
+        private String paymentId;
         private String reason;
 
         public PaymentFailedEvent() {
         }
 
-        public PaymentFailedEvent(String bookingId, String reason) {
-            this.bookingId = bookingId;
+        public PaymentFailedEvent(String paymentId, String reason) {
+            this.paymentId = paymentId;
             this.reason = reason;
         }
 
-        public String getBookingId() {
-            return bookingId;
+        public String getPaymentId() {
+            return paymentId;
+        }
+
+        public void setPaymentId(String paymentId) {
+            this.paymentId = paymentId;
         }
 
         public String getReason() {
             return reason;
-        }
-
-        public void setBookingId(String bookingId) {
-            this.bookingId = bookingId;
         }
 
         public void setReason(String reason) {
