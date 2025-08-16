@@ -37,6 +37,10 @@ axon:
     processors:
       booking-saga:
         mode: tracking
+  serializer:
+    general: jackson
+    events: jackson
+    messages: jackson
 #  messaging:
 #    amqp:
 #      exchange: axon

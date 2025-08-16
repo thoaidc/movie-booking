@@ -4,12 +4,9 @@ import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import vn.ptit.moviebooking.common.Command;
-import vn.ptit.moviebooking.payment.dto.request.PaymentRequest;
-import vn.ptit.moviebooking.payment.entity.Payment;
+import vn.ptit.moviebooking.payment.dto.RefundRequest;
 import vn.ptit.moviebooking.payment.service.PaymentService;
 
 @Component
@@ -26,21 +23,31 @@ public class PaymentCommandHandler {
 
     @CommandHandler
     public void handle(Command.ProcessPaymentCommand cmd) {
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setBookingId(1);
-        paymentRequest.setAmount(cmd.getAmount());
-        paymentRequest.setAtm("1212");
-        paymentRequest.setPin("23342");
-        Payment payment = paymentService.createPayment(paymentRequest);
+        boolean isPaymentSuccess = paymentService.paymentProcessTest(cmd.getPaymentId());
+        Command.ProcessPaymentResultCommand processPaymentResultCommand = new Command.ProcessPaymentResultCommand();
+        processPaymentResultCommand.setBookingId(cmd.getBookingId());
+        processPaymentResultCommand.setPaymentId(cmd.getPaymentId());
+        processPaymentResultCommand.setAmount(cmd.getAmount());
+        processPaymentResultCommand.setSuccess(isPaymentSuccess);
+        processPaymentResultCommand.setSeatIds(cmd.getSeatIds());
+        commandGateway.send(processPaymentResultCommand);
+        System.out.println("Payment command handler xử lý thanh toán, kết quả: " + isPaymentSuccess);
+    }
 
-        if (payment.getTransactionId() != null) {
-            Command.ConfirmPaymentCommand confirmPaymentCommand = new Command.ConfirmPaymentCommand();
-            BeanUtils.copyProperties(cmd, confirmPaymentCommand);
-            commandGateway.send(confirmPaymentCommand);
-        } else {
-            Command.RefundCommand refundCommand = new Command.RefundCommand();
-            BeanUtils.copyProperties(cmd, refundCommand);
-            commandGateway.send(refundCommand);
-        }
+    @CommandHandler
+    public void handle(Command.RefundCommand cmd) {
+        RefundRequest request = new RefundRequest();
+        request.setPaymentId(cmd.getPaymentId());
+        request.setAmount(cmd.getAmount());
+        request.setReason(cmd.getReason());
+        paymentService.refund(request);
+        Command.RefundResultCommand refundResultCommand = new Command.RefundResultCommand();
+        refundResultCommand.setBookingId(cmd.getBookingId());
+        refundResultCommand.setPaymentId(cmd.getPaymentId());
+        refundResultCommand.setAmount(cmd.getAmount());
+        refundResultCommand.setReason(cmd.getReason());
+        refundResultCommand.setSeatIds(cmd.getSeatIds());
+        commandGateway.send(refundResultCommand);
+        System.out.println("Payment command handler xử lý yêu cầu hoàn tiền: " + cmd.getReason());
     }
 }

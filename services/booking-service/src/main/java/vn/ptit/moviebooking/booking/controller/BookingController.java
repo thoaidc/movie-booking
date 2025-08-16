@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.ptit.moviebooking.booking.dto.request.BookingRequest;
+import vn.ptit.moviebooking.booking.entity.Booking;
+import vn.ptit.moviebooking.booking.service.TicketBookingService;
 import vn.ptit.moviebooking.common.Command;
 
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -17,19 +18,21 @@ import java.util.concurrent.CompletableFuture;
 public class BookingController {
 
     private final CommandGateway commandGateway;
+    private final TicketBookingService bookingService;
 
-    public BookingController(CommandGateway commandGateway) {
+    public BookingController(CommandGateway commandGateway, TicketBookingService bookingService) {
         this.commandGateway = commandGateway;
+        this.bookingService = bookingService;
     }
 
     @PostMapping
-    public CompletableFuture<String> createBooking(@RequestBody BookingRequest req) {
-        String bookingId = UUID.randomUUID().toString();
+    public CompletableFuture<String> createBooking(@RequestBody BookingRequest bookingRequest) {
+        Booking booking = bookingService.createBooking(bookingRequest);
         Command.CreateBookingCommand createBookingCommand = new Command.CreateBookingCommand();
-        createBookingCommand.setBookingId(bookingId);
-        createBookingCommand.setSeatIds(req.getSeatIds());
-        createBookingCommand.setTotalAmount(req.getTotalAmount());
-        System.out.println("Create new booking: " + bookingId);
+        createBookingCommand.setBookingId(booking.getId());
+        createBookingCommand.setSeatIds(bookingRequest.getSeatIds());
+        createBookingCommand.setTotalAmount(bookingRequest.getTotalAmount());
+        System.out.println("Create new booking: " + booking.getId());
         return commandGateway.send(createBookingCommand);
     }
 }

@@ -9,7 +9,7 @@ CREATE TABLE `booking` (
     `show_id` int NOT NULL,
     `total_amount` DECIMAL(10,2) NOT NULL,
     `create_time` timestamp NOT NULL,
-    `status` VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    `status` VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -22,6 +22,7 @@ CREATE TABLE `booking_seat` (
     UNIQUE KEY uk_booking_seat (booking_id, seat_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `token_entry`;
 CREATE TABLE token_entry (
     processor_name VARCHAR(255) NOT NULL,
     segment INTEGER NOT NULL,
@@ -32,6 +33,7 @@ CREATE TABLE token_entry (
     PRIMARY KEY (processor_name, segment)
 );
 
+DROP TABLE IF EXISTS `association_value_entry`;
 CREATE TABLE association_value_entry (
     id BIGINT NOT NULL AUTO_INCREMENT,
     association_key VARCHAR(255) NOT NULL,
@@ -43,6 +45,7 @@ CREATE TABLE association_value_entry (
     INDEX idx_saga_id (saga_id)
 );
 
+DROP TABLE IF EXISTS `saga_entry`;
 CREATE TABLE saga_entry (
     saga_id VARCHAR(255) NOT NULL,
     revision VARCHAR(255),
@@ -51,6 +54,7 @@ CREATE TABLE saga_entry (
     PRIMARY KEY (saga_id)
 );
 
+DROP TABLE IF EXISTS `domain_event_entry`;
 CREATE TABLE domain_event_entry (
     global_index BIGINT AUTO_INCREMENT,
     event_identifier VARCHAR(255) NOT NULL,
@@ -67,6 +71,7 @@ CREATE TABLE domain_event_entry (
     UNIQUE KEY uq_event_identifier (event_identifier)
 );
 
+DROP TABLE IF EXISTS `snapshot_event_entry`;
 CREATE TABLE snapshot_event_entry (
     aggregate_identifier VARCHAR(255) NOT NULL,
     sequence_number BIGINT NOT NULL,
@@ -81,5 +86,6 @@ CREATE TABLE snapshot_event_entry (
     UNIQUE KEY uq_snapshot_event_identifier (event_identifier)
 );
 
+DROP TABLE IF EXISTS `association_value_entry_seq`;
 CREATE TABLE association_value_entry_seq (next_val BIGINT);
 INSERT INTO association_value_entry_seq VALUES (1);

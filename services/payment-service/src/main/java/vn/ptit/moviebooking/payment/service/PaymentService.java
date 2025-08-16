@@ -3,18 +3,18 @@ package vn.ptit.moviebooking.payment.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ptit.moviebooking.payment.constants.PaymentConstants;
+import vn.ptit.moviebooking.payment.dto.RefundRequest;
 import vn.ptit.moviebooking.payment.dto.request.PaymentRequest;
-import vn.ptit.moviebooking.payment.dto.request.RefundProcessCommand;
+import vn.ptit.moviebooking.payment.dto.response.BaseResponseDTO;
 import vn.ptit.moviebooking.payment.entity.Payment;
 import vn.ptit.moviebooking.payment.entity.Refund;
 import vn.ptit.moviebooking.payment.repository.PaymentRepository;
 import vn.ptit.moviebooking.payment.repository.RefundRepository;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class PaymentService {
@@ -28,30 +28,42 @@ public class PaymentService {
     }
 
     @Transactional
-    public Payment createPayment(PaymentRequest paymentRequest) {
+    public BaseResponseDTO createPaymentPending(PaymentRequest paymentRequest) {
         Payment payment = new Payment();
         payment.setAmount(paymentRequest.getAmount());
         payment.setBookingId(paymentRequest.getBookingId());
         payment.setStatus(PaymentConstants.PaymentStatus.PENDING);
-        return paymentRepository.save(payment);
+        paymentRepository.save(payment);
+        return BaseResponseDTO.builder().ok(payment);
     }
 
     @Transactional
-    public Payment paymentProcessTest(Payment payment, PaymentRequest paymentRequest) {
-        if (Objects.equals(paymentRequest.getAtm(), "123") && Objects.equals(paymentRequest.getPin(), "123")) {
-            payment.setPaymentTime(ZonedDateTime.now(ZoneId.systemDefault()));
-            payment.setTransactionId(UUID.randomUUID().toString());
+    public boolean paymentProcessTest(Integer paymentId) {
+        Optional<Payment> paymentOptional = paymentRepository.findById(paymentId);
+
+        if (paymentOptional.isEmpty()) {
+            return false;
+        }
+
+        Payment payment = paymentOptional.get();
+        boolean result = ThreadLocalRandom.current().nextBoolean();
+
+        if (result) {
             payment.setStatus(PaymentConstants.PaymentStatus.COMPLETED);
-            return paymentRepository.save(payment);
+            paymentRepository.save(payment);
+            return true;
         } else {
             payment.setStatus(PaymentConstants.PaymentStatus.FAILED);
-            return paymentRepository.save(payment);
+            paymentRepository.save(payment);
+            return false;
         }
     }
 
     @Transactional
-    public Refund refund(RefundProcessCommand refundRequest) {
+    public Refund refund(RefundRequest refundRequest) {
         Refund refund = new Refund();
+        refund.setPaymentId(refundRequest.getPaymentId());
+        refund.setAmount(refundRequest.getAmount());
         refund.setReason(refundRequest.getReason());
         refund.setRefundTime(ZonedDateTime.now(ZoneId.systemDefault()));
         return refundRepository.save(refund);

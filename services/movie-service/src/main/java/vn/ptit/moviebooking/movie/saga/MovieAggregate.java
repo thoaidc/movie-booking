@@ -5,59 +5,50 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import vn.ptit.moviebooking.common.Command;
 import vn.ptit.moviebooking.common.Event;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Aggregate
 public class MovieAggregate {
 
     @AggregateIdentifier
     private String seatReservationId;
-    private final Logger logger = LoggerFactory.getLogger(MovieAggregate.class);
-    private static final Set<Integer> seats = new HashSet<>();
 
     protected MovieAggregate() {}
 
     @CommandHandler
-    public MovieAggregate(Command.ReserveSeatCommand cmd) {
-        if (seats.containsAll(cmd.getSeatIds())) {
-            Event.CancelSeatEvent cancelSeatEvent = new Event.CancelSeatEvent();
-            BeanUtils.copyProperties(cmd, cancelSeatEvent);
-            AggregateLifecycle.apply(cancelSeatEvent);
-            logger.debug("Ghế đã bị giữ bởi người khác: {} - {}", cancelSeatEvent.getSeatReservationId(), cancelSeatEvent.getSeatIds());
-        } else {
-            Event.ReserveSeatEvent reserveSeatEvent = new Event.ReserveSeatEvent();
-            BeanUtils.copyProperties(cmd, reserveSeatEvent);
-            AggregateLifecycle.apply(reserveSeatEvent);
-            logger.debug("Giữ ghế thành công: {} - {}", reserveSeatEvent.getSeatReservationId(), reserveSeatEvent.getSeatIds());
-        }
+    public MovieAggregate(Command.CreateCheckSeatCommand cmd) {
+        Event.CreateCheckSeatEvent event = new Event.CreateCheckSeatEvent();
+        event.setSeatReservationId(cmd.getSeatReservationId());
+        event.setBookingId(cmd.getBookingId());
+        event.setSeatIds(cmd.getSeatIds());
+        AggregateLifecycle.apply(event);
+        System.out.println("Movie aggregate nhận command khởi tạo check seat");
     }
 
     @CommandHandler
-    public void handle(Command.CancelSeatCommand cmd) {
-        Event.CancelSeatEvent cancelSeatEvent = new Event.CancelSeatEvent();
-        BeanUtils.copyProperties(cmd, cancelSeatEvent);
-        AggregateLifecycle.apply(cancelSeatEvent);
-        logger.debug("Hủy giữ ghế: {} - {}", cancelSeatEvent.getSeatReservationId(), cancelSeatEvent.getSeatIds());
+    public void handle(Command.ReserveSeatResultCommand cmd) {
+        Event.ReserveSeatResultEvent event = new Event.ReserveSeatResultEvent();
+        event.setBookingId(cmd.getBookingId());
+        event.setSeatReservationId(cmd.getSeatReservationId());
+        event.setSeatIds(cmd.getSeatIds());
+        event.setSuccess(cmd.isSuccess());
+        AggregateLifecycle.apply(event);
+        System.out.println("Movie aggregate nhận command kết quả giữ ghế: " + cmd.isSuccess());
+    }
+
+    @CommandHandler
+    public void handle(Command.CancelSeatResultCommand cmd) {
+        Event.CancelSeatResultEvent event = new Event.CancelSeatResultEvent();
+        event.setBookingId(cmd.getBookingId());
+        event.setSeatReservationId(cmd.getSeatReservationId());
+        event.setSeatIds(cmd.getSeatIds());
+        AggregateLifecycle.apply(event);
+        System.out.println("Movie aggreagte nhận command kết quả phát hành lại ghế");
     }
 
     @EventSourcingHandler
-    public void on(Event.ReserveSeatEvent event) {
+    public void on(Event.CreateCheckSeatEvent event) {
         this.seatReservationId = event.getSeatReservationId();
-        seats.addAll(event.getSeatIds());
-        logger.debug("Giữ ghế event: {} - {}", event.getSeatReservationId(), event.getSeatIds());
-    }
-
-    @EventSourcingHandler
-    public void on(Event.CancelSeatEvent event) {
-        this.seatReservationId = event.getSeatReservationId();
-        event.getSeatIds().forEach(seats::remove);
-        logger.debug("Hủy giữ ghế event: {} - {}", event.getSeatReservationId(), event.getSeatIds());
     }
 }

@@ -11,11 +11,14 @@ import org.springframework.beans.BeanUtils;
 import vn.ptit.moviebooking.common.Command;
 import vn.ptit.moviebooking.common.Event;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
 @Aggregate
 public class BookingAggregate {
 
     @AggregateIdentifier
-    private String bookingId;
+    private Integer bookingId;
     private final Logger logger = LoggerFactory.getLogger(BookingAggregate.class);
 
     protected BookingAggregate() {}
@@ -23,9 +26,12 @@ public class BookingAggregate {
     @CommandHandler
     public BookingAggregate(Command.CreateBookingCommand createBookingCommand) {
         Event.CreateBookingEvent createBookingEvent = new Event.CreateBookingEvent();
-        BeanUtils.copyProperties(createBookingCommand, createBookingEvent);
+        createBookingEvent.setBookingId(createBookingCommand.getBookingId());
+        createBookingEvent.setTotalAmount(createBookingCommand.getTotalAmount());
+        createBookingEvent.setSeatIds(Optional.ofNullable(createBookingCommand.getSeatIds()).orElse(new ArrayList<>()));
         AggregateLifecycle.apply(createBookingEvent);
-        logger.debug("Tạo đơn hàng command: {}", createBookingCommand.getBookingId());
+        this.bookingId = createBookingEvent.getBookingId();
+        System.out.println("Booking aggregate nhận command Tạo đơn hàng: "+ createBookingCommand.getBookingId());
     }
 
     @CommandHandler
@@ -33,32 +39,22 @@ public class BookingAggregate {
         Event.MarkBookingSuccessEvent bookingSuccessEvent = new Event.MarkBookingSuccessEvent();
         BeanUtils.copyProperties(successCommand, bookingSuccessEvent);
         AggregateLifecycle.apply(bookingSuccessEvent);
-        logger.debug("Đặt hàng thành công command");
+        System.out.println("Booking aggregate nhận command xác nhận Đặt hàng thành công");
     }
 
     @CommandHandler
     public void handle(Command.MarkBookingFailedCommand failedCommand) {
         Event.MarkBookingFailedEvent bookingFailedEvent = new Event.MarkBookingFailedEvent();
-        BeanUtils.copyProperties(failedCommand, bookingFailedEvent);
+        bookingFailedEvent.setBookingId(failedCommand.getBookingId());
+        bookingFailedEvent.setStatus(failedCommand.getStatus());
+        bookingFailedEvent.setReason(bookingFailedEvent.getReason());
+        bookingFailedEvent.setPaymentId(failedCommand.getPaymentId());
         AggregateLifecycle.apply(bookingFailedEvent);
-        logger.debug("Đặt hàng thất bại command");
+        System.out.println("Booking aggregate nhận command báo Đặt hàng thất bại");
     }
 
     @EventSourcingHandler
     public void on(Event.CreateBookingEvent createBookingEvent) {
-        logger.debug("Tạo đơn hàng event");
         this.bookingId = createBookingEvent.getBookingId();
-    }
-
-    @EventSourcingHandler
-    public void on(Event.MarkBookingSuccessEvent bookingSuccessEvent) {
-        logger.debug("Xác nhận đơn hàng event");
-        this.bookingId = bookingSuccessEvent.getBookingId();
-    }
-
-    @EventSourcingHandler
-    public void on(Event.MarkBookingFailedEvent bookingFailedEvent) {
-        logger.debug("Hủy đơn hàng event");
-        this.bookingId = bookingFailedEvent.getBookingId();
     }
 }

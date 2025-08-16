@@ -6,16 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import vn.ptit.moviebooking.booking.constants.BookingConstants;
 import vn.ptit.moviebooking.booking.dto.request.BookingRequest;
-import vn.ptit.moviebooking.booking.dto.request.CheckSeatAvailabilityRequestCommand;
-import vn.ptit.moviebooking.booking.dto.request.ConfirmSeatsRequestCommand;
-import vn.ptit.moviebooking.booking.dto.request.NotificationCommand;
-import vn.ptit.moviebooking.booking.dto.request.NotificationRequest;
-import vn.ptit.moviebooking.booking.dto.request.ReleasedSeatsRequestCommand;
-import vn.ptit.moviebooking.booking.dto.request.ValidateMovieRequest;
-import vn.ptit.moviebooking.booking.dto.request.ValidateMovieRequestCommand;
-import vn.ptit.moviebooking.booking.dto.response.BaseCommandReplyMessage;
-import vn.ptit.moviebooking.booking.dto.response.BaseResponseDTO;
-import vn.ptit.moviebooking.booking.dto.response.CustomerDTO;
 import vn.ptit.moviebooking.booking.entity.Booking;
 import vn.ptit.moviebooking.booking.entity.BookingSeat;
 import vn.ptit.moviebooking.booking.exception.BaseBadRequestException;
@@ -26,7 +16,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -71,52 +60,6 @@ public class TicketBookingService {
     }
 
     @Transactional
-    public ValidateMovieRequestCommand createValidateMovieCommand(BookingRequest bookingRequest) {
-        Booking booking = createBooking(bookingRequest);
-        ValidateMovieRequestCommand validateMovieCommand = new ValidateMovieRequestCommand();
-        ValidateMovieRequest validateMovieRequest = new ValidateMovieRequest();
-        validateMovieRequest.setMovieId(bookingRequest.getMovieId());
-        validateMovieRequest.setShowId(booking.getShowId());
-        validateMovieCommand.setSagaId(booking.getId());
-        validateMovieCommand.setValidateMovieRequest(validateMovieRequest);
-
-        return validateMovieCommand;
-    }
-
-    public CheckSeatAvailabilityRequestCommand createCheckSeatsAvailabilityCommand(BaseCommandReplyMessage request) {
-        CheckSeatAvailabilityRequestCommand command = new CheckSeatAvailabilityRequestCommand();
-        command.setSeatIds(bookingSeatRepository.findAllSeatIdsByBookingId(request.getSagaId()));
-        command.setSagaId(request.getSagaId());
-        return command;
-    }
-
-    public ConfirmSeatsRequestCommand createConfirmBookingSeatsCommand(BaseCommandReplyMessage request) {
-        ConfirmSeatsRequestCommand command = new ConfirmSeatsRequestCommand();
-        command.setSeatIds(bookingSeatRepository.findAllSeatIdsByBookingId(request.getSagaId()));
-        command.setSagaId(request.getSagaId());
-        return command;
-    }
-
-    public ReleasedSeatsRequestCommand createReleasedBookingSeatsCommand(BaseCommandReplyMessage request) {
-        ReleasedSeatsRequestCommand command = new ReleasedSeatsRequestCommand();
-        command.setSeatIds(bookingSeatRepository.findAllSeatIdsByBookingId(request.getSagaId()));
-        command.setSagaId(request.getSagaId());
-        return command;
-    }
-
-    public void updateBookingCustomerInfo(BaseCommandReplyMessage request) {
-        Integer userId = (Integer) request.getResult();
-        Optional<Booking> bookingOptional = ticketBookingRepository.findById(request.getSagaId());
-
-        if (bookingOptional.isEmpty()) {
-            throw new BaseBadRequestException(ENTITY_NAME, "Booking not exists, cannot update customer info");
-        }
-
-        Booking booking = bookingOptional.get();
-        booking.setUserId(userId);
-        ticketBookingRepository.save(booking);
-    }
-
     public void updateBookingStatus(Integer bookingId, String status) {
         Optional<Booking> bookingOptional = ticketBookingRepository.findById(bookingId);
 
@@ -129,24 +72,24 @@ public class TicketBookingService {
         ticketBookingRepository.save(booking);
     }
 
-    public NotificationCommand createNotificationCommand(BaseCommandReplyMessage request) {
-        Integer userId = ticketBookingRepository.findCustomerIdByBookingId(request.getSagaId());
-        BaseResponseDTO responseDTO = userServiceClient.getUserInfo(userId);
-        NotificationCommand command = new NotificationCommand();
-        command.setSagaId(request.getSagaId());
-
-        if (responseDTO.getStatus() && Objects.nonNull(responseDTO.getResult())) {
-            try {
-                CustomerDTO customerDTO = objectMapper.convertValue(responseDTO.getResult(), CustomerDTO.class);
-                NotificationRequest notificationRequest = new NotificationRequest();
-                notificationRequest.setSender("MOVIE-BOOKING-SYSTEM");
-                notificationRequest.setReceiver(customerDTO.getEmail());
-                notificationRequest.setTitle("Your ticket booking has completed successfully!");
-                notificationRequest.setContent("Please double check the information on your ticket and make sure it is correct.");
-                command.setNotificationRequest(notificationRequest);
-            } catch (Exception ignored) {}
-        }
-
-        return command;
-    }
+//    public NotificationRequest createNotificationCommand(BaseCommandReplyMessage request) {
+//        Integer userId = ticketBookingRepository.findCustomerIdByBookingId(request.getSagaId());
+//        BaseResponseDTO responseDTO = userServiceClient.getUserInfo(userId);
+//        NotificationCommand command = new NotificationCommand();
+//        command.setSagaId(request.getSagaId());
+//
+//        if (responseDTO.getStatus() && Objects.nonNull(responseDTO.getResult())) {
+//            try {
+//                CustomerDTO customerDTO = objectMapper.convertValue(responseDTO.getResult(), CustomerDTO.class);
+//                NotificationRequest notificationRequest = new NotificationRequest();
+//                notificationRequest.setSender("MOVIE-BOOKING-SYSTEM");
+//                notificationRequest.setReceiver(customerDTO.getEmail());
+//                notificationRequest.setTitle("Your ticket booking has completed successfully!");
+//                notificationRequest.setContent("Please double check the information on your ticket and make sure it is correct.");
+//                command.setNotificationRequest(notificationRequest);
+//            } catch (Exception ignored) {}
+//        }
+//
+//        return command;
+//    }
 }

@@ -17,7 +17,6 @@ CREATE TABLE `cinema_room` (
     `name` VARCHAR(100) NOT NULL,
     `capacity` INT NOT NULL,
     `screen_type` VARCHAR(10) NOT NULL DEFAULT '2D',
-    CONSTRAINT fk_room_cinema FOREIGN KEY (cinema_id) REFERENCES cinema(id) ON DELETE CASCADE,
     INDEX idx_room_cinema (cinema_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -45,8 +44,6 @@ CREATE TABLE `show_time` (
     `start_time` timestamp not null,
     `end_time` timestamp not null,
     PRIMARY KEY (`id`),
-    CONSTRAINT fk_show_movie FOREIGN KEY (movie_id) REFERENCES movie(id),
-    CONSTRAINT fk_show_cinema_room FOREIGN KEY (cinema_room_id) REFERENCES cinema_room(id),
     INDEX idx_show_movie (movie_id),
     INDEX idx_show_cinema_room (cinema_room_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -58,7 +55,6 @@ CREATE TABLE `seat` (
     `seat_number` INT NOT NULL,
     `seat_row` INT NOT NULL,
     `code` VARCHAR(10) NOT NULL,
-    CONSTRAINT fk_seat_room FOREIGN KEY (cinema_room_id) REFERENCES cinema_room(id) ON DELETE CASCADE,
     INDEX idx_seat_room (cinema_room_id),
     UNIQUE KEY uk_seat_screen_row_number (cinema_room_id, seat_row, seat_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -75,67 +71,78 @@ CREATE TABLE `seat_show` (
     INDEX idx_seat_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+
+
+DROP TABLE IF EXISTS `token_entry`;
 CREATE TABLE token_entry (
-                             processor_name VARCHAR(255) NOT NULL,
-                             segment INTEGER NOT NULL,
-                             token BLOB,
-                             token_type VARCHAR(255),
-                             timestamp VARCHAR(255),
-                             owner VARCHAR(255),
-                             PRIMARY KEY (processor_name, segment)
+    processor_name VARCHAR(255) NOT NULL,
+    segment INTEGER NOT NULL,
+    token BLOB,
+    token_type VARCHAR(255),
+    timestamp VARCHAR(255),
+    owner VARCHAR(255),
+    PRIMARY KEY (processor_name, segment)
 );
 
+DROP TABLE IF EXISTS `association_value_entry`;
 CREATE TABLE association_value_entry (
-                                         id BIGINT NOT NULL AUTO_INCREMENT,
-                                         association_key VARCHAR(255) NOT NULL,
-                                         association_value VARCHAR(255) NOT NULL,
-                                         saga_id VARCHAR(255) NOT NULL,
-                                         saga_type VARCHAR(255) NOT NULL,
-                                         PRIMARY KEY (id),
-                                         INDEX idx_assoc_val (association_key, association_value),
-                                         INDEX idx_saga_id (saga_id)
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    association_key VARCHAR(255) NOT NULL,
+    association_value VARCHAR(255) NOT NULL,
+    saga_id VARCHAR(255) NOT NULL,
+    saga_type VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    INDEX idx_assoc_val (association_key, association_value),
+    INDEX idx_saga_id (saga_id)
 );
 
+DROP TABLE IF EXISTS `saga_entry`;
 CREATE TABLE saga_entry (
-                            saga_id VARCHAR(255) NOT NULL,
-                            revision VARCHAR(255),
-                            saga_type VARCHAR(255) NOT NULL,
-                            serialized_saga BLOB,
-                            PRIMARY KEY (saga_id)
+    saga_id VARCHAR(255) NOT NULL,
+    revision VARCHAR(255),
+    saga_type VARCHAR(255) NOT NULL,
+    serialized_saga BLOB,
+    PRIMARY KEY (saga_id)
 );
 
+DROP TABLE IF EXISTS `domain_event_entry`;
 CREATE TABLE domain_event_entry (
-                                    global_index BIGINT AUTO_INCREMENT,
-                                    event_identifier VARCHAR(255) NOT NULL,
-                                    aggregate_identifier VARCHAR(255) NOT NULL,
-                                    sequence_number BIGINT NOT NULL,
-                                    type VARCHAR(255),
-                                    timestamp VARCHAR(255) NOT NULL,
-                                    payload_type VARCHAR(255) NOT NULL,
-                                    payload_revision VARCHAR(255),
-                                    payload BLOB NOT NULL,
-                                    meta_data BLOB,
-                                    PRIMARY KEY (global_index),
-                                    UNIQUE KEY uq_aggregate_seq (aggregate_identifier, sequence_number),
-                                    UNIQUE KEY uq_event_identifier (event_identifier)
+    global_index BIGINT AUTO_INCREMENT,
+    event_identifier VARCHAR(255) NOT NULL,
+    aggregate_identifier VARCHAR(255) NOT NULL,
+    sequence_number BIGINT NOT NULL,
+    type VARCHAR(255),
+    timestamp VARCHAR(255) NOT NULL,
+    payload_type VARCHAR(255) NOT NULL,
+    payload_revision VARCHAR(255),
+    payload BLOB NOT NULL,
+    meta_data BLOB,
+    PRIMARY KEY (global_index),
+    UNIQUE KEY uq_aggregate_seq (aggregate_identifier, sequence_number),
+    UNIQUE KEY uq_event_identifier (event_identifier)
 );
 
+DROP TABLE IF EXISTS `snapshot_event_entry`;
 CREATE TABLE snapshot_event_entry (
-                                      aggregate_identifier VARCHAR(255) NOT NULL,
-                                      sequence_number BIGINT NOT NULL,
-                                      type VARCHAR(255),
-                                      timestamp VARCHAR(255) NOT NULL,
-                                      event_identifier VARCHAR(255) NOT NULL,
-                                      payload_type VARCHAR(255) NOT NULL,
-                                      payload_revision VARCHAR(255),
-                                      payload BLOB NOT NULL,
-                                      meta_data BLOB,
-                                      PRIMARY KEY (aggregate_identifier, sequence_number),
-                                      UNIQUE KEY uq_snapshot_event_identifier (event_identifier)
+    aggregate_identifier VARCHAR(255) NOT NULL,
+    sequence_number BIGINT NOT NULL,
+    type VARCHAR(255),
+    timestamp VARCHAR(255) NOT NULL,
+    event_identifier VARCHAR(255) NOT NULL,
+    payload_type VARCHAR(255) NOT NULL,
+    payload_revision VARCHAR(255),
+    payload BLOB NOT NULL,
+    meta_data BLOB,
+    PRIMARY KEY (aggregate_identifier, sequence_number),
+    UNIQUE KEY uq_snapshot_event_identifier (event_identifier)
 );
 
+DROP TABLE IF EXISTS `association_value_entry_seq`;
 CREATE TABLE association_value_entry_seq (next_val BIGINT);
 INSERT INTO association_value_entry_seq VALUES (1);
+
+
 
 # Data
 -- Insert data into cinema table
