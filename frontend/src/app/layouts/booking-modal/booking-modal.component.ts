@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {NgbActiveModal, NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {Location, NgClass, NgFor, NgIf} from '@angular/common';
 import {Seat, SeatShow, SeatStatus} from '../../core/models/seats.model';
 import {Movie} from '../../core/models/movies.model';
@@ -12,11 +12,8 @@ import {SeatService} from '../../core/services/seats.service';
 import {Booking} from '../../core/models/bookings.model';
 import {BookingService} from '../../core/services/bookings.service';
 import {WebsocketService} from '../../core/services/websocket.service';
-import {ToastrService} from 'ngx-toastr';
 import {IMessage} from '@stomp/stompjs';
 import {Subscription} from 'rxjs';
-import {BaseResponse} from '../../core/models/response.model';
-import {PaymentModalComponent} from '../payment-modal/payment-modal.component';
 
 @Component({
   selector: 'app-booking-modal',
@@ -33,7 +30,6 @@ import {PaymentModalComponent} from '../payment-modal/payment-modal.component';
 })
 export class BookingModalComponent implements OnInit, OnDestroy {
   @Input() movie!: Movie;
-  private modalRef: NgbModalRef | undefined;
   movieShows: Shows[] = [];
   selectedShowId: number = 0;
   selectedShowInfo: Shows | undefined;
@@ -43,19 +39,16 @@ export class BookingModalComponent implements OnInit, OnDestroy {
   step: string = 'INIT';
   bookingStatus: string[] = [];
   private topicSubscription: Subscription | null = null;
-  private bookingId: number = 0;
-  private totalPayment: number = 0;
+  isBooking: boolean = false;
 
   constructor(
     public activeModal: NgbActiveModal,
-    private modalService: NgbModal,
     private location: Location,
     private showService: ShowsService,
     private seatService: SeatService,
     private cdr: ChangeDetectorRef,
     private bookingService: BookingService,
-    private webSocketService: WebsocketService,
-    private toast: ToastrService
+    private webSocketService: WebsocketService
   ) {
     this.location.subscribe(() => {
       this.activeModal.dismiss(false);
@@ -65,6 +58,7 @@ export class BookingModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.movie && this.movie.id) {
       this.searchMovieShows();
+      this.isBooking = false;
     }
   }
 
@@ -140,6 +134,11 @@ export class BookingModalComponent implements OnInit, OnDestroy {
   }
 
   createBooking() {
+    if (this.isBooking) {
+      return;
+    }
+
+    this.isBooking = true;
     const bookingRequest: Booking = {
       movieId: this.selectedShowInfo?.movieId || 0,
       showId: this.selectedShowId,
@@ -148,61 +147,19 @@ export class BookingModalComponent implements OnInit, OnDestroy {
     }
 
     this.bookingService.createBookingRequest(bookingRequest).subscribe(response => {
-      if (response.status && response.result > 0) {
-        this.bookingId = response.result;
-        this.totalPayment = bookingRequest.totalAmount;
-        this.step = 'VERIFY';
-
-        this.topicSubscription = this.webSocketService.subscribeToTopic('/topics/bookings').subscribe({
+      if (response.result) {
+        this.topicSubscription = this.webSocketService.subscribeToTopic(`/topics/bookings/${response.result}`).subscribe({
           next: (message: IMessage) => this.handleWebSocketMessage(message),
           error: (e) => console.log(e)
-        })
-      } else {
-        this.toast.error('Tạo yêu cầu đặt vé thất bại', 'Thông báo');
+        });
       }
     });
   }
 
-  openPaymentModal(bookingId: number, totalPayment: number) {
-    this.modalRef = this.modalService.open(PaymentModalComponent, {backdrop: 'static'});
-    this.modalRef.componentInstance.bookingId = bookingId;
-    this.modalRef.componentInstance.totalPayment = totalPayment;
-    this.modalRef.componentInstance.initialize();
-  }
-
-  openVerifyCustomerModal(bookingId: number) {
-    // this.modalRef = this.modalService.open(VerifyCustomerModalComponent, {backdrop: 'static'});
-    // this.modalRef.componentInstance.bookingId = bookingId;
-    // this.modalRef.componentInstance.initialize();
-  }
-
   private handleWebSocketMessage(message: IMessage) {
-    const response: BaseResponse<any> = JSON.parse(message.body) as BaseResponse<any>;
-    this.bookingStatus.push(response.message || 'Processing');
-
-    if (response.status) {
-      if (response.result) {
-        this.step = response.result;
-
-        if (response.result === 'VERIFY_CUSTOMER') {
-          this.openVerifyCustomerModal(this.bookingId);
-        }
-
-        if (response.result === 'PAYMENT') {
-          this.openPaymentModal(this.bookingId, this.totalPayment);
-        }
-      }
-    } else {
-      if (response.result) {
-        if (response.result === 'VERIFY_CUSTOMER') {
-          this.step = 'VERIFY_CUSTOMER_FAILED';
-        }
-
-        if (response.result === 'PAYMENT') {
-          this.step = 'PAYMENT_FAILED';
-        }
-      }
-    }
+    const response: string = message.body;
+    this.bookingStatus.push(response || 'Processing');
+    this.step = 'COMPLETED';
   }
 
   dismiss() {

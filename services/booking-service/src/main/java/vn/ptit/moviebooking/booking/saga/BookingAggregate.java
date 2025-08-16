@@ -46,6 +46,7 @@ public class BookingAggregate {
     public void handle(Command.MarkBookingFailedCommand failedCommand) {
         Event.MarkBookingFailedEvent bookingFailedEvent = new Event.MarkBookingFailedEvent();
         bookingFailedEvent.setBookingId(failedCommand.getBookingId());
+        bookingFailedEvent.setTransactionId(failedCommand.getTransactionId());
         bookingFailedEvent.setStatus(failedCommand.getStatus());
         bookingFailedEvent.setReason(bookingFailedEvent.getReason());
         bookingFailedEvent.setPaymentId(failedCommand.getPaymentId());

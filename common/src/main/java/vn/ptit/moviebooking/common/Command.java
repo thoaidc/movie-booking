@@ -59,8 +59,17 @@ public class Command {
     public static class MarkBookingFailedCommand {
         @TargetAggregateIdentifier
         private Integer bookingId;
+        private String transactionId;
         private Integer paymentId;
         private String status;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public String getStatus() {
             return status;
@@ -283,10 +292,19 @@ public class Command {
     // Payment
     public static class CreatePaymentCommand {
         @TargetAggregateIdentifier
+        private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
         private Float amount;
         private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public List<Integer> getSeatIds() {
             return seatIds;
@@ -326,10 +344,19 @@ public class Command {
 
     public static class ProcessPaymentCommand {
         @TargetAggregateIdentifier
+        private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
         private Float amount;
         private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public List<Integer> getSeatIds() {
             return seatIds;
@@ -369,11 +396,20 @@ public class Command {
 
     public static class ProcessPaymentResultCommand {
         @TargetAggregateIdentifier
+        private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
         private Float amount;
         private boolean success;
         private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public List<Integer> getSeatIds() {
             return seatIds;
@@ -422,11 +458,20 @@ public class Command {
 
     public static class RefundCommand {
         @TargetAggregateIdentifier
+        private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
         private Float amount;
         private String reason;
         private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public List<Integer> getSeatIds() {
             return seatIds;
@@ -474,11 +519,20 @@ public class Command {
 
     public static class RefundResultCommand {
         @TargetAggregateIdentifier
+        private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
         private Float amount;
         private String reason;
         private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public List<Integer> getSeatIds() {
             return seatIds;

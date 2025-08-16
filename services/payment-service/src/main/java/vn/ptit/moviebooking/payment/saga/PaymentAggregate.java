@@ -12,7 +12,7 @@ import vn.ptit.moviebooking.common.Event;
 public class PaymentAggregate {
 
     @AggregateIdentifier
-    private Integer paymentId;
+    private String transactionId;
 
     public PaymentAggregate() {}
 
@@ -21,6 +21,7 @@ public class PaymentAggregate {
         Event.CreatePaymentEvent createPaymentEvent = new Event.CreatePaymentEvent();
         createPaymentEvent.setBookingId(cmd.getBookingId());
         createPaymentEvent.setPaymentId(cmd.getPaymentId());
+        createPaymentEvent.setTransactionId(cmd.getTransactionId());
         createPaymentEvent.setAmount(cmd.getAmount());
         createPaymentEvent.setSeatIds(cmd.getSeatIds());
         AggregateLifecycle.apply(createPaymentEvent);
@@ -32,6 +33,7 @@ public class PaymentAggregate {
         Event.PaymentResultEvent paymentResultEvent = new Event.PaymentResultEvent();
         paymentResultEvent.setPaymentId(cmd.getPaymentId());
         paymentResultEvent.setBookingId(cmd.getBookingId());
+        paymentResultEvent.setTransactionId(cmd.getTransactionId());
         paymentResultEvent.setAmount(cmd.getAmount());
         paymentResultEvent.setSuccess(cmd.isSuccess());
         paymentResultEvent.setSeatIds(cmd.getSeatIds());
@@ -44,6 +46,7 @@ public class PaymentAggregate {
         Event.RefundResultEvent refundResultEvent = new Event.RefundResultEvent();
         refundResultEvent.setPaymentId(cmd.getPaymentId());
         refundResultEvent.setBookingId(cmd.getBookingId());
+        refundResultEvent.setTransactionId(cmd.getTransactionId());
         refundResultEvent.setAmount(cmd.getAmount());
         refundResultEvent.setReason(cmd.getReason());
         refundResultEvent.setSeatIds(cmd.getSeatIds());
@@ -53,6 +56,6 @@ public class PaymentAggregate {
 
     @EventSourcingHandler
     public void on(Event.CreatePaymentEvent event) {
-        this.paymentId = event.getPaymentId();
+        this.transactionId = event.getTransactionId();
     }
 }

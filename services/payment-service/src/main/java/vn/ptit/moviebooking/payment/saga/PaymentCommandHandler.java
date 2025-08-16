@@ -26,6 +26,7 @@ public class PaymentCommandHandler {
         boolean isPaymentSuccess = paymentService.paymentProcessTest(cmd.getPaymentId());
         Command.ProcessPaymentResultCommand processPaymentResultCommand = new Command.ProcessPaymentResultCommand();
         processPaymentResultCommand.setBookingId(cmd.getBookingId());
+        processPaymentResultCommand.setTransactionId(cmd.getTransactionId());
         processPaymentResultCommand.setPaymentId(cmd.getPaymentId());
         processPaymentResultCommand.setAmount(cmd.getAmount());
         processPaymentResultCommand.setSuccess(isPaymentSuccess);
@@ -44,6 +45,7 @@ public class PaymentCommandHandler {
         Command.RefundResultCommand refundResultCommand = new Command.RefundResultCommand();
         refundResultCommand.setBookingId(cmd.getBookingId());
         refundResultCommand.setPaymentId(cmd.getPaymentId());
+        refundResultCommand.setTransactionId(cmd.getTransactionId());
         refundResultCommand.setAmount(cmd.getAmount());
         refundResultCommand.setReason(cmd.getReason());
         refundResultCommand.setSeatIds(cmd.getSeatIds());

@@ -55,8 +55,17 @@ public class Event {
     public static class MarkBookingFailedEvent {
         private Integer bookingId;
         private Integer paymentId;
+        private String transactionId;
         private String reason;
         private String status;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public String getStatus() {
             return status;
@@ -214,10 +223,19 @@ public class Event {
 
     // Payment
     public static class CreatePaymentEvent {
+        private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
         private Float amount;
         private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public List<Integer> getSeatIds() {
             return seatIds;
@@ -256,12 +274,21 @@ public class Event {
     }
 
     public static class PaymentResultEvent {
+        private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
         private Float amount;
         private boolean success;
         private String reason;
         private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public List<Integer> getSeatIds() {
             return seatIds;
@@ -316,11 +343,20 @@ public class Event {
     }
 
     public static class RefundResultEvent {
+        private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
         private Float amount;
         private String reason;
         private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
 
         public List<Integer> getSeatIds() {
             return seatIds;
