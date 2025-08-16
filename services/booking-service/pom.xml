@@ -61,23 +61,11 @@
             <artifactId>axon-spring-boot-starter</artifactId>
             <version>4.9.0</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.axonframework.extensions.springcloud</groupId>-->
-<!--            <artifactId>axon-springcloud-spring-boot-starter</artifactId>-->
-<!--            <version>4.9.0</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.axonframework.extensions.amqp</groupId>-->
-<!--            <artifactId>axon-amqp-spring-boot-starter</artifactId>-->
-<!--            <version>4.9.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.axonframework</groupId>-->
-<!--            <artifactId>axon-server-connector</artifactId>-->
-<!--            <version>4.9.0</version>-->
-<!--        </dependency>-->
+        <!-- To connect Spring Cloud config server -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>

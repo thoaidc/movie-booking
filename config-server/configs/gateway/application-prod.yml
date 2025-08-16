@@ -1,0 +1,22 @@
+logging:
+  level:
+    root: info
+    vn.ptit.moviebooking: info
+  charset:
+    console: UTF-8
+    file: UTF-8
+  # Custom properties to define logs file paths according to different profiles
+  file-path: /mnt/logs
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+    healthcheck:
+      enabled: true
+    registerWithEureka: true
+    fetchRegistry: true
+  instance:
+    preferIpAddress: true
+    lease-renewal-interval-in-seconds: 5
+    instanceId: ${spring.application.name}:${server.port}

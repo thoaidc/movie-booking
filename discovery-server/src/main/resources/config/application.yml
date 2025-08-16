@@ -1,17 +1,5 @@
 spring:
   application:
-    name: eureka-server
+    name: discovery-server
   profiles:
     active: "@profiles.active@"
-
-server:
-  port: 8761
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always

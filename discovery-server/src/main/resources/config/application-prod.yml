@@ -1,21 +1,6 @@
-logging:
-  level:
-    root: info
-    vn.ptit.moviebooking: info
-  charset:
-    console: UTF-8
-    file: UTF-8
-  # Custom properties to define logs file paths according to different profiles
-  file-path: /mnt/logs
+spring.config.import: optional:configserver:http://localhost:8888
 
-eureka:
-  instance:
-    hostname: localhost
-  client:
-    register-with-eureka: false
-    fetch-registry: false
-    serviceUrl:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
-  server:
-    waitTimeInMsWhenSyncEmpty: 0
-    enableSelfPreservation: true
+spring:
+  cloud:
+    config:
+      uri: http://localhost:8888

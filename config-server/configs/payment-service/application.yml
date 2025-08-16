@@ -1,0 +1,50 @@
+
+spring:
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        archive:
+          autodetection: class
+        show_sql: true
+        format_sql: false
+        jdbc:
+          time_zone: UTC
+          ddl-auto: update
+        hibernate:
+          # Hibernate only checks if the current schema matches the entity
+          # If it does not match, the application will not start
+          # Do not make any changes to the schema
+          ddl-auto: update
+  sql:
+    init:
+      mode: never
+
+axon:
+  eventhandling:
+    processors:
+      booking-saga:
+        mode: tracking
+  serializer:
+    general: jackson
+    events: jackson
+    messages: jackson
+#  messaging:
+#    amqp:
+#      exchange: axon
+#      routing-key-prefix: ""
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: db,ping
+  health:
+    db:
+      enabled: true

@@ -4,8 +4,6 @@ spring:
     open-in-view: false
     properties:
       hibernate:
-        archive:
-          autodetection: class
         show_sql: true
         format_sql: false
         jdbc:
@@ -19,16 +17,6 @@ spring:
   sql:
     init:
       mode: never
-
-axon:
-  eventhandling:
-    processors:
-      booking-saga:
-        mode: tracking
-  serializer:
-    general: jackson
-    events: jackson
-    messages: jackson
 
 management:
   endpoints:
@@ -44,3 +32,10 @@ management:
   health:
     db:
       enabled: true
+
+app:
+  security:
+    jwt:
+      base64-secret-key: ZGN0LWJhc2Utc2VjcmV0LWtleS10b2tlbi12YWxpZGl0eS04NjQwMDAwMG1zLWZvci1yZW1lbWJlci1tZS04NjQwMDAwMG1z
+      validity: 3600000 # 1 hour
+      validity-for-remember: 604800000 # 7 days

@@ -1,38 +1,6 @@
-logging:
-  level:
-    root: debug
-    vn.ptit.moviebooking: debug
-  charset:
-    console: UTF-8
-    file: UTF-8
-  # Custom properties to define logs file paths according to different profiles
-  file-path: mnt/logs
+spring.config.import: optional:configserver:http://localhost:8888
 
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/mb_notification
-    username: root
-    password: "@Thoai169"
-
-  jpa:
-    properties:
-      hibernate:
-        show_sql: true
-
-server:
-  port: 8102
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-    healthcheck:
-      enabled: true
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    preferIpAddress: true
-    lease-renewal-interval-in-seconds: 5  # Heartbeat frequency
-    lease-expiration-duration-in-seconds: 60  # Expiration time if no heartbeat received
-    instanceId: ${spring.application.name}:${server.port}
+  cloud:
+    config:
+      uri: http://localhost:8888
