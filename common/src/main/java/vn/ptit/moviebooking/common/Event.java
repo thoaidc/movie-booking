@@ -58,6 +58,15 @@ public class Event {
         private String transactionId;
         private String reason;
         private String status;
+        private Float totalAmount;
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
 
         public String getTransactionId() {
             return transactionId;
@@ -108,6 +117,15 @@ public class Event {
         private String seatReservationId;
         private Integer bookingId;
         private List<Integer> seatIds;
+        private Float totalAmount;
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
 
         public CreateCheckSeatEvent() {
         }
@@ -192,6 +210,15 @@ public class Event {
         private String seatReservationId;
         private Integer bookingId;
         private List<Integer> seatIds;
+        private Float totalAmount;
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
 
         public CancelSeatResultEvent() {
         }

@@ -52,6 +52,7 @@ public class BookingSaga {
         command.setBookingId(event.getBookingId());
         command.setSeatReservationId(seatReservationId);
         command.setSeatIds(event.getSeatIds());
+        command.setTotalAmount(event.getTotalAmount());
         commandGateway.send(command);
         System.out.println("Start saga: " + event.getBookingId());
         socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(), "Start saga booking ID: " + event.getBookingId());
@@ -64,6 +65,7 @@ public class BookingSaga {
         command.setBookingId(event.getBookingId());
         command.setSeatReservationId(event.getSeatReservationId());
         command.setSeatIds(event.getSeatIds());
+        command.setTotalAmount(event.getTotalAmount());
         commandGateway.send(command);
         System.out.println("Gửi command tạo check seat aggregate");
         socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(), "Khởi tạo yêu cầu giữ ghế: " + event.getSeatIds());
@@ -95,6 +97,7 @@ public class BookingSaga {
             // huy booking
             Command.MarkBookingFailedCommand bookingFailedCommand = new Command.MarkBookingFailedCommand();
             bookingFailedCommand.setBookingId(event.getBookingId());
+            bookingFailedCommand.setTotalAmount(event.getAmount());
             bookingFailedCommand.setReason("Giu ghe that bai");
             bookingFailedCommand.setStatus(BookingConstants.Status.RESERVE_SEATS_FAILED);
             commandGateway.send(bookingFailedCommand);
@@ -140,6 +143,7 @@ public class BookingSaga {
             bookingFailedCommand.setTransactionId(event.getTransactionId());
             bookingFailedCommand.setBookingId(event.getBookingId());
             bookingFailedCommand.setReason("Thanh toán thất bại");
+            bookingFailedCommand.setTotalAmount(event.getAmount());
             bookingFailedCommand.setStatus(BookingConstants.Status.PAYMENT_FAILED);
             commandGateway.send(cancelSeatCommand);
             System.out.println("Saga thanh toán thất bại, gửi command hủy giữ ghế: " + event.getSeatIds());
@@ -170,7 +174,8 @@ public class BookingSaga {
             Command.RefundCommand refundCommand = new Command.RefundCommand();
             refundCommand.setPaymentId(event.getPaymentId());
             refundCommand.setTransactionId(event.getTransactionId());
-            refundCommand.setBookingId(refundCommand.getBookingId());
+            refundCommand.setBookingId(event.getBookingId());
+            refundCommand.setAmount(event.getTotalAmount());
             refundCommand.setReason(event.getReason());
             commandGateway.send(refundCommand);
             System.out.println("Saga gửi command hoàn tiền");

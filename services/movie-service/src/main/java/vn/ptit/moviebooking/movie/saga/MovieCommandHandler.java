@@ -25,6 +25,7 @@ public class MovieCommandHandler {
         reserveSeatResultCommand.setSeatReservationId(command.getSeatReservationId());
         reserveSeatResultCommand.setSeatIds(command.getSeatIds());
         reserveSeatResultCommand.setSuccess(success);
+        reserveSeatResultCommand.setTotalAmount(command.getTotalAmount());
         System.out.println("Movie command handler xử lý command kiểm tra và giữ ghế: " + success);
         commandGateway.send(reserveSeatResultCommand);
     }
@@ -37,6 +38,7 @@ public class MovieCommandHandler {
         cancelResultCommand.setBookingId(command.getBookingId());
         cancelResultCommand.setSeatReservationId(command.getSeatReservationId());
         cancelResultCommand.setSeatIds(command.getSeatIds());
+        cancelResultCommand.setTotalAmount(command.getTotalAmount());
         commandGateway.send(cancelResultCommand);
     }
 }

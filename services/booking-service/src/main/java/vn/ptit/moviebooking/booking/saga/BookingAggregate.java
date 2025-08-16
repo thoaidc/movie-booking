@@ -48,7 +48,8 @@ public class BookingAggregate {
         bookingFailedEvent.setBookingId(failedCommand.getBookingId());
         bookingFailedEvent.setTransactionId(failedCommand.getTransactionId());
         bookingFailedEvent.setStatus(failedCommand.getStatus());
-        bookingFailedEvent.setReason(bookingFailedEvent.getReason());
+        bookingFailedEvent.setReason(failedCommand.getReason());
+        bookingFailedEvent.setTotalAmount(failedCommand.getTotalAmount());
         bookingFailedEvent.setPaymentId(failedCommand.getPaymentId());
         AggregateLifecycle.apply(bookingFailedEvent);
         System.out.println("Booking aggregate nhận command báo Đặt hàng thất bại");

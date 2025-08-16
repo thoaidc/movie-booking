@@ -61,6 +61,7 @@ public class Command {
         private Integer bookingId;
         private String transactionId;
         private Integer paymentId;
+        private Float totalAmount;
         private String status;
 
         public String getTransactionId() {
@@ -69,6 +70,14 @@ public class Command {
 
         public void setTransactionId(String transactionId) {
             this.transactionId = transactionId;
+        }
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
         }
 
         public String getStatus() {
@@ -115,6 +124,15 @@ public class Command {
         private String seatReservationId;
         private Integer bookingId;
         private List<Integer> seatIds;
+        private Float totalAmount;
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
 
         public CreateCheckSeatCommand() {
         }
@@ -149,6 +167,15 @@ public class Command {
         private String seatReservationId;
         private Integer bookingId;
         private List<Integer> seatIds;
+        private Float totalAmount;
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
 
         public CheckAndReserveSeatCommand() {
         }
@@ -184,6 +211,15 @@ public class Command {
         private Integer bookingId;
         private List<Integer> seatIds;
         private boolean success;
+        private Float totalAmount;
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
 
         public ReserveSeatResultCommand() {
         }
@@ -226,6 +262,15 @@ public class Command {
         private String seatReservationId;
         private Integer bookingId;
         private List<Integer> seatIds;
+        private Float totalAmount;
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
 
         public CancelSeatCommand() {
         }
@@ -260,6 +305,15 @@ public class Command {
         private String seatReservationId;
         private Integer bookingId;
         private List<Integer> seatIds;
+        private Float totalAmount;
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
 
         public CancelSeatResultCommand() {
         }
