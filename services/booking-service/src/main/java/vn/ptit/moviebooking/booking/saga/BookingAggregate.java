@@ -7,12 +7,13 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
+import vn.ptit.moviebooking.booking.constants.BookingConstants;
 import vn.ptit.moviebooking.common.Command;
 import vn.ptit.moviebooking.common.Event;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Aggregate
 public class BookingAggregate {
@@ -36,10 +37,25 @@ public class BookingAggregate {
 
     @CommandHandler
     public void handle(Command.MarkBookingSuccessCommand successCommand) {
-        Event.MarkBookingSuccessEvent bookingSuccessEvent = new Event.MarkBookingSuccessEvent();
-        BeanUtils.copyProperties(successCommand, bookingSuccessEvent);
-        AggregateLifecycle.apply(bookingSuccessEvent);
-        System.out.println("Booking aggregate nhận command xác nhận Đặt hàng thành công");
+        boolean result = ThreadLocalRandom.current().nextBoolean();
+
+        if (result) {
+            Event.MarkBookingSuccessEvent bookingSuccessEvent = new Event.MarkBookingSuccessEvent();
+            bookingSuccessEvent.setBookingId(successCommand.getBookingId());
+            AggregateLifecycle.apply(bookingSuccessEvent);
+            System.out.println("Booking aggregate nhận command xác nhận đặt hàng, xử lý thành công");
+        } else {
+            Event.MarkBookingFailedEvent bookingFailedEvent = new Event.MarkBookingFailedEvent();
+            bookingFailedEvent.setBookingId(successCommand.getBookingId());
+            bookingFailedEvent.setTransactionId(successCommand.getTransactionId());
+            bookingFailedEvent.setSeatIds(successCommand.getSeatIds());
+            bookingFailedEvent.setStatus(BookingConstants.Status.FAILED);
+            bookingFailedEvent.setReason("Không thể xác nhận đơn hàng hoàn thành");
+            bookingFailedEvent.setTotalAmount(successCommand.getTotalAmount());
+            bookingFailedEvent.setPaymentId(successCommand.getPaymentId());
+            AggregateLifecycle.apply(bookingFailedEvent);
+            System.out.println("Booking aggregate nhận command xác nhận đặt hàng, xử lý thất bại");
+        }
     }
 
     @CommandHandler

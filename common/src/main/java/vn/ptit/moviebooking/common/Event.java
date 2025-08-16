@@ -39,6 +39,42 @@ public class Event {
 
     public static class MarkBookingSuccessEvent {
         private Integer bookingId;
+        private Integer paymentId;
+        private String transactionId;
+        private Float totalAmount;
+        private List<Integer> seatIds;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
+
+        public Float getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(Float totalAmount) {
+            this.totalAmount = totalAmount;
+        }
+
+        public List<Integer> getSeatIds() {
+            return seatIds;
+        }
+
+        public void setSeatIds(List<Integer> seatIds) {
+            this.seatIds = seatIds;
+        }
+
+        public Integer getPaymentId() {
+            return paymentId;
+        }
+
+        public void setPaymentId(Integer paymentId) {
+            this.paymentId = paymentId;
+        }
 
         public MarkBookingSuccessEvent() {
         }
@@ -59,6 +95,15 @@ public class Event {
         private String reason;
         private String status;
         private Float totalAmount;
+        private List<Integer> seatIds;
+
+        public List<Integer> getSeatIds() {
+            return seatIds;
+        }
+
+        public void setSeatIds(List<Integer> seatIds) {
+            this.seatIds = seatIds;
+        }
 
         public Float getTotalAmount() {
             return totalAmount;

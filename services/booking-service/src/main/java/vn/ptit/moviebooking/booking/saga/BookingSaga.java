@@ -129,6 +129,10 @@ public class BookingSaga {
             // xac nhan don hang thanh cong
             Command.MarkBookingSuccessCommand bookingSuccessCommand = new Command.MarkBookingSuccessCommand();
             bookingSuccessCommand.setBookingId(event.getBookingId());
+            bookingSuccessCommand.setTotalAmount(event.getAmount());
+            bookingSuccessCommand.setSeatIds(event.getSeatIds());
+            bookingSuccessCommand.setPaymentId(event.getPaymentId());
+            bookingSuccessCommand.setTransactionId(event.getTransactionId());
             commandGateway.send(bookingSuccessCommand);
             System.out.println("Saga thanh toán thành công, gửi command xác nhận đơn hàng thành công: "+ event.getPaymentId());
             socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(),
@@ -160,14 +164,23 @@ public class BookingSaga {
     @EndSaga
     public void handle(Event.MarkBookingSuccessEvent event) {
         System.out.println("Booking successfully! End Saga.");
-        // update DB
         ticketBookingService.updateBookingStatus(event.getBookingId(), BookingConstants.Status.COMPLETED);
-        socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(), "Đơn hàng đã hoàn thành: " + event.getBookingId());
+        socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(),
+                "Đơn hàng đã hoàn thành: " + event.getBookingId());
     }
 
     @SagaEventHandler(associationProperty = "bookingId")
     @EndSaga
     public void handle(Event.MarkBookingFailedEvent event) {
+        if (event.getSeatIds() != null && !event.getSeatIds().isEmpty()) {
+            Command.CancelSeatCommand cancelSeatCommand = new Command.CancelSeatCommand();
+            cancelSeatCommand.setBookingId(event.getBookingId());
+            cancelSeatCommand.setSeatIds(event.getSeatIds());
+            commandGateway.send(cancelSeatCommand);
+            socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(),
+                    "Xử lý yêu cầu hủy đơn hàng, gửi yêu cầu phát hành lại ghế: " + event.getPaymentId());
+        }
+
         // Neu thanh toan roi thi hoan tien
         if (event.getPaymentId() != null) {
             ticketBookingService.updateBookingStatus(event.getBookingId(), BookingConstants.Status.FAILED);
