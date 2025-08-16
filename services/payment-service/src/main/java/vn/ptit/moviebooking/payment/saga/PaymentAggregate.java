@@ -21,11 +21,19 @@ public class PaymentAggregate {
     public PaymentAggregate() {}
 
     @CommandHandler
-    public PaymentAggregate(Command.ProcessPaymentCommand cmd) {
-        Event.ProcessPaymentEvent processPaymentEvent = new Event.ProcessPaymentEvent();
-        BeanUtils.copyProperties(cmd, processPaymentEvent);
-        AggregateLifecycle.apply(processPaymentEvent);
-        log.debug("Payment success!, send command: {}", cmd.getPaymentId());
+    public PaymentAggregate(Command.CreatePaymentCommand cmd) {
+        Event.CreatePaymentEvent createPaymentEvent = new Event.CreatePaymentEvent();
+        BeanUtils.copyProperties(cmd, createPaymentEvent);
+        AggregateLifecycle.apply(createPaymentEvent);
+        log.debug("Payment created!, send command: {}", cmd.getPaymentId());
+    }
+
+    @CommandHandler
+    public void handle(Command.ConfirmPaymentCommand cmd) {
+        Event.ConfirmPaymentEvent confirmPaymentEvent = new Event.ConfirmPaymentEvent();
+        BeanUtils.copyProperties(cmd, confirmPaymentEvent);
+        AggregateLifecycle.apply(confirmPaymentEvent);
+        log.debug("Payment success, send confirm command: {}", cmd.getPaymentId());
     }
 
     @CommandHandler
@@ -33,13 +41,19 @@ public class PaymentAggregate {
         Event.RefundEvent refundEvent = new Event.RefundEvent();
         BeanUtils.copyProperties(cmd, refundEvent);
         AggregateLifecycle.apply(refundEvent);
-        log.debug("Payment failed, send command: {}", cmd.getPaymentId());
+        log.debug("Payment failed, send refund command: {}", cmd.getPaymentId());
     }
 
     @EventSourcingHandler
-    public void on(Event.ProcessPaymentEvent event) {
+    public void on(Event.CreatePaymentEvent event) {
         this.paymentId = event.getPaymentId();
-        log.debug("Payment success event: {}", event.getPaymentId());
+        log.debug("Payment created event: {}", event.getPaymentId());
+    }
+
+    @EventSourcingHandler
+    public void on(Event.ConfirmPaymentEvent event) {
+        this.paymentId = event.getPaymentId();
+        log.debug("Payment success! Confirm event: {}", event.getPaymentId());
     }
 
     @EventSourcingHandler

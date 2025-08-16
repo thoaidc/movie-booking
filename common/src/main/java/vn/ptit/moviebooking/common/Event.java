@@ -153,12 +153,78 @@ public class Event {
     }
 
     // Payment
+    public static class CreatePaymentEvent {
+        private String paymentId;
+        private String bookingId;
+        private Float amount;
+
+        public CreatePaymentEvent() {
+        }
+
+        public String getPaymentId() {
+            return paymentId;
+        }
+
+        public void setPaymentId(String paymentId) {
+            this.paymentId = paymentId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public Float getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Float amount) {
+            this.amount = amount;
+        }
+    }
+
     public static class ProcessPaymentEvent {
         private String paymentId;
         private String bookingId;
         private Float amount;
 
         public ProcessPaymentEvent() {
+        }
+
+        public String getPaymentId() {
+            return paymentId;
+        }
+
+        public void setPaymentId(String paymentId) {
+            this.paymentId = paymentId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public Float getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Float amount) {
+            this.amount = amount;
+        }
+    }
+
+    public static class ConfirmPaymentEvent {
+        private String paymentId;
+        private String bookingId;
+        private Float amount;
+
+        public ConfirmPaymentEvent() {
         }
 
         public String getPaymentId() {

@@ -151,6 +151,40 @@ public class Command {
     }
 
     // Payment
+    public static class CreatePaymentCommand {
+        @TargetAggregateIdentifier
+        private String paymentId;
+        private String bookingId;
+        private Float amount;
+
+        public CreatePaymentCommand() {
+        }
+
+        public String getPaymentId() {
+            return paymentId;
+        }
+
+        public void setPaymentId(String paymentId) {
+            this.paymentId = paymentId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public Float getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Float amount) {
+            this.amount = amount;
+        }
+    }
+
     public static class ProcessPaymentCommand {
         @TargetAggregateIdentifier
         private String paymentId;
@@ -184,6 +218,38 @@ public class Command {
             this.amount = amount;
         }
     }
+
+    public static class ConfirmPaymentCommand {
+        @TargetAggregateIdentifier
+        private String paymentId;
+        private String bookingId;
+        private Float amount;
+
+        public String getPaymentId() {
+            return paymentId;
+        }
+
+        public void setPaymentId(String paymentId) {
+            this.paymentId = paymentId;
+        }
+
+        public String getBookingId() {
+            return bookingId;
+        }
+
+        public void setBookingId(String bookingId) {
+            this.bookingId = bookingId;
+        }
+
+        public Float getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Float amount) {
+            this.amount = amount;
+        }
+    }
+
 
     public static class RefundCommand {
         @TargetAggregateIdentifier

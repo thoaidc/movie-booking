@@ -42,12 +42,22 @@ public class BookingSaga {
     public void handle(Event.ReserveSeatEvent event) {
         String paymentId = UUID.randomUUID().toString();
         SagaLifecycle.associateWith("paymentId", paymentId);
+        Command.CreatePaymentCommand createPaymentCommand = new Command.CreatePaymentCommand();
+        createPaymentCommand.setBookingId(event.getBookingId());
+        createPaymentCommand.setPaymentId(paymentId);
+        createPaymentCommand.setAmount(event.getAmount());
+        commandGateway.send(createPaymentCommand);
+        logger.debug("Handle reserve seats success: {}, send payment command: {}", event.getSeatReservationId(), paymentId);
+    }
+
+    @SagaEventHandler(associationProperty = "paymentId")
+    public void handle(Event.CreatePaymentEvent event) {
         Command.ProcessPaymentCommand processPaymentCommand = new Command.ProcessPaymentCommand();
         processPaymentCommand.setBookingId(event.getBookingId());
-        processPaymentCommand.setPaymentId(paymentId);
+        processPaymentCommand.setPaymentId(event.getPaymentId());
         processPaymentCommand.setAmount(event.getAmount());
         commandGateway.send(processPaymentCommand);
-        logger.debug("Handle reserve seats success: {}, send payment command: {}", event.getSeatReservationId(), paymentId);
+        logger.debug("Handle created payment pending, send payment command: {}", event.getPaymentId());
     }
 
     @SagaEventHandler(associationProperty = "seatReservationId")
@@ -60,7 +70,7 @@ public class BookingSaga {
     }
 
     @SagaEventHandler(associationProperty = "paymentId")
-    public void handle(Event.ProcessPaymentEvent event) {
+    public void handle(Event.ConfirmPaymentEvent event) {
         Command.MarkBookingSuccessCommand bookingSuccessCommand = new Command.MarkBookingSuccessCommand();
         bookingSuccessCommand.setBookingId(event.getBookingId());
         commandGateway.send(bookingSuccessCommand);
