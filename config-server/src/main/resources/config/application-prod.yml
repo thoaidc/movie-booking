@@ -15,8 +15,8 @@ logging:
   file:
     path: /mnt/logs/
   level:
-    root: info
-    vn.ptit.moviebooking.configserver: info
+    root: debug
+    vn.ptit.moviebooking.configserver: debug
   charset:
     console: UTF-8
     file: UTF-8

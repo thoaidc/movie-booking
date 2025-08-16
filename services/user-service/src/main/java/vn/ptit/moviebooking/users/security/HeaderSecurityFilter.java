@@ -70,7 +70,7 @@ public class HeaderSecurityFilter extends OncePerRequestFilter {
     protected boolean shouldAuthenticateRequest(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.info("[HEADER_SECURITY_FORWARD_FILTER] - Filtering {}: {}", request.getMethod(), requestURI);
-        return Arrays.stream(new String[]{"/api/p/**"}).noneMatch(pattern -> antPathMatcher.match(pattern, requestURI));
+        return Arrays.stream(new String[]{"/api/p/**", "/actuator/**"}).noneMatch(pattern -> antPathMatcher.match(pattern, requestURI));
     }
 
     protected void authenticate(HttpServletRequest request) {

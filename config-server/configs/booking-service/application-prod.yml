@@ -26,6 +26,18 @@ spring:
       hibernate:
         show_sql: false
 
+axon:
+  axonserver:
+    servers: axon-server-prod:8124
+  eventhandling:
+    processors:
+      booking-saga:
+        mode: tracking
+  serializer:
+    general: jackson
+    events: jackson
+    messages: jackson
+
 server:
   port: 8080
 

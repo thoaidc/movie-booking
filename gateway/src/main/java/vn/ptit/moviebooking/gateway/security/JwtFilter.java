@@ -39,6 +39,10 @@ public class JwtFilter implements WebFilter {
             return chain.filter(exchange);
         }
 
+        if (parser.parse("/actuator/**").matches(PathContainer.parsePath(requestUri))) {
+            return chain.filter(exchange);
+        }
+
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
 
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {

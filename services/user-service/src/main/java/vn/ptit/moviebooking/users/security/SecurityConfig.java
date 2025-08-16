@@ -92,7 +92,7 @@ public class SecurityConfig {
                 sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(registry -> registry
-                        .requestMatchers(SecurityUtils.convertToMvcMatchers(mvc, new String[]{ "/api/p/**"}))
+                        .requestMatchers(SecurityUtils.convertToMvcMatchers(mvc, new String[]{ "/api/p/**", "/actuator/**"}))
                         .permitAll()
                         // Used with custom CORS filters in CORS (Cross-Origin Resource Sharing) mechanism
                         // The browser will send OPTIONS requests (preflight requests) to check

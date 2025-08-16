@@ -59,6 +59,10 @@ public class SecurityRequestForwardingFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
+        if (parser.parse("/actuator/**").matches(PathContainer.parsePath(requestUri))) {
+            return chain.filter(exchange);
+        }
+
         log.debug("[HEADER_SECURITY_FORWARD] - Forward request: {}: {}", exchange.getRequest().getMethod(), requestUri);
         Authentication authentication = exchange.getAttribute("authentication");
 

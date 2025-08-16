@@ -20,20 +20,6 @@ spring:
     init:
       mode: never
 
-axon:
-  eventhandling:
-    processors:
-      booking-saga:
-        mode: tracking
-  serializer:
-    general: jackson
-    events: jackson
-    messages: jackson
-#  messaging:
-#    amqp:
-#      exchange: axon
-#      routing-key-prefix: ""
-
 management:
   endpoints:
     web:

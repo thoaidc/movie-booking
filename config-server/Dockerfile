@@ -24,14 +24,16 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
+COPY configs ./configs/
+
 # Install wget for health check
 RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
 
 # Copy Spring Boot JAR from the build stage
-COPY --from=build /app/target/user-service-*.jar app.jar
+COPY --from=build /app/target/config-server-*.jar app.jar
 
-# Expose port 8080 for Spring Boot
-EXPOSE 8080
+# Expose port 8888 for Spring Boot
+EXPOSE 8888
 
 # Start Spring Boot app
 CMD ["java", "-jar", "app.jar"]

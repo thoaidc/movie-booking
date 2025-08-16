@@ -27,7 +27,7 @@ WORKDIR /app
 # Install wget for health check
 RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /app/target/discovery-service-*.jar app.jar
+COPY --from=build /app/target/discovery-server-*.jar app.jar
 
 EXPOSE 8761
 

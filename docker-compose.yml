@@ -1,10 +1,39 @@
 services:
+  config-server:
+    container_name: config-server
+    build: ./config-server
+    ports:
+      - "8888:8888"
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  axon-server:
+    image: axoniq/axonserver:latest-jdk-17-dev
+    container_name: axon-server-prod
+    networks:
+      - network
+    environment:
+      AXONIQ_AXONSERVER_DEVMODE_ENABLED: true
+    ports:
+      - "8024:8024"   # UI
+      - "8124:8124"   # gRPC
+
   # Service Discovery
   service-registry:
     container_name: service-registry
-    build: ./services/discovery-service
+    build: ./discovery-server
     ports:
       - "8761:8761"
+    depends_on:
+      config-server:
+        condition: service_healthy
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     networks:
@@ -18,8 +47,8 @@ services:
       start_period: 15s
 
   # API Gateway
-  api-gateway:
-    container_name: api-gateway
+  gateway:
+    container_name: gateway
     build: ./gateway
     ports:
       - "8080:8080"
@@ -39,7 +68,7 @@ services:
       start_period: 15s
 
   # MySQL databases
-  mb-movie-db:
+  movie-db:
     image: mysql:8.0.40-oracle
     container_name: movie-db
     environment:
@@ -58,7 +87,7 @@ services:
       timeout: 10s
       retries: 10
 
-  mb-user-db:
+  user-db:
     image: mysql:8.0.40-oracle
     container_name: user-db
     environment:
@@ -77,7 +106,7 @@ services:
       timeout: 10s
       retries: 10
 
-  mb-payment-db:
+  payment-db:
     image: mysql:8.0.40-oracle
     container_name: payment-db
     environment:
@@ -96,7 +125,7 @@ services:
       timeout: 10s
       retries: 10
 
-  mb-booking-db:
+  booking-db:
     image: mysql:8.0.40-oracle
     container_name: booking-db
     environment:
@@ -115,7 +144,7 @@ services:
       timeout: 10s
       retries: 10
 
-  mb-notification-db:
+  notification-db:
     image: mysql:8.0.40-oracle
     container_name: notification-db
     environment:
@@ -144,15 +173,15 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
     depends_on:
-      mb-movie-db:
+      movie-db:
         condition: service_healthy
-      mb-user-db:
+      user-db:
         condition: service_healthy
-      mb-payment-db:
+      payment-db:
         condition: service_healthy
-      mb-booking-db:
+      booking-db:
         condition: service_healthy
-      mb-notification-db:
+      notification-db:
         condition: service_healthy
     networks:
       - network
@@ -162,17 +191,19 @@ services:
   movie-service:
     container_name: movie-service
     build: ./services/movie-service
+    volumes:
+      - C:/Users/dctho/.m2:/root/.m2
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mb-movie-db:3306/mb_movie?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://movie-db:3306/mb_movie?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      mb-movie-db:
+      movie-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
-      api-gateway:
+      gateway:
         condition: service_healthy
     networks:
       - network
@@ -190,14 +221,14 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mb-user-db:3306/mb_user?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://user-db:3306/mb_user?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      mb-user-db:
+      user-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
-      api-gateway:
+      gateway:
         condition: service_healthy
     networks:
       - network
@@ -215,14 +246,14 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mb-payment-db:3306/mb_payment?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://payment-db:3306/mb_payment?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      mb-payment-db:
+      payment-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
-      api-gateway:
+      gateway:
         condition: service_healthy
       user-service:
         condition: service_healthy
@@ -242,14 +273,14 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mb-booking-db:3306/mb_booking?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://booking-db:3306/mb_booking?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      mb-booking-db:
+      booking-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
-      api-gateway:
+      gateway:
         condition: service_healthy
       movie-service:
         condition: service_healthy
@@ -271,14 +302,14 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mb-notification-db:3306/mb_notification?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://notification-db:3306/mb_notification?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      mb-notification-db:
+      notification-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
-      api-gateway:
+      gateway:
         condition: service_healthy
       booking-service:
         condition: service_healthy
@@ -301,7 +332,7 @@ services:
     depends_on:
       service-registry:
         condition: service_healthy
-      api-gateway:
+      gateway:
         condition: service_healthy
       movie-service:
         condition: service_healthy

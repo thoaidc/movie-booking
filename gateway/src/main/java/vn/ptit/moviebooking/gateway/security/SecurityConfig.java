@@ -44,7 +44,7 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(exchanges ->
-                        exchanges.pathMatchers("/api/p/**").permitAll()
+                        exchanges.pathMatchers("/api/p/**", "/actuator/**").permitAll()
                                 .anyExchange().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions

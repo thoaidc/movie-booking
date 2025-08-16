@@ -27,16 +27,6 @@ spring:
     username: ${RABBIT_MQ_USERNAME}
     password: ${RABBIT_MQ_PASSWORD}
 
-axon:
-  eventhandling:
-    processors:
-      booking-saga:
-        mode: tracking
-  serializer:
-    general: jackson
-    events: jackson
-    messages: jackson
-
 management:
   endpoints:
     web:
