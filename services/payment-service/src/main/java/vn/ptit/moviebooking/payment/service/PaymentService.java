@@ -60,12 +60,19 @@ public class PaymentService {
     }
 
     @Transactional
-    public Refund refund(RefundRequest refundRequest) {
+    public void refund(RefundRequest refundRequest) {
+        Optional<Payment> paymentOptional = paymentRepository.findById(refundRequest.getPaymentId());
+
+        if (paymentOptional.isEmpty() || !PaymentConstants.PaymentStatus.COMPLETED.equals(paymentOptional.get().getStatus())) {
+            return;
+        }
+
+        // Chỉ hoàn tiền nếu đã thanh toán thành công
         Refund refund = new Refund();
         refund.setPaymentId(refundRequest.getPaymentId());
         refund.setAmount(refundRequest.getAmount());
         refund.setReason(refundRequest.getReason());
         refund.setRefundTime(ZonedDateTime.now(ZoneId.systemDefault()));
-        return refundRepository.save(refund);
+        refundRepository.save(refund);
     }
 }
