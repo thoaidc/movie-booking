@@ -28,7 +28,7 @@ spring:
 
 axon:
   axonserver:
-    servers: axon-server-prod:8124
+    servers: host.docker.internal:8124
   eventhandling:
     processors:
       booking-saga:

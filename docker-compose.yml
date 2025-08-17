@@ -1,16 +1,4 @@
 services:
-  axon-server:
-    image: axoniq/axonserver:latest-jdk-17-dev
-    container_name: axon-server-prod
-    networks:
-      - network
-    environment:
-      AXONIQ_AXONSERVER_DEVMODE_ENABLED: true
-    ports:
-      - "8024:8024"   # UI
-      - "8124:8124"   # gRPC
-    restart: unless-stopped
-
   # MySQL databases
   ticket-booking-db:
     image: mysql:8.0.40-oracle
@@ -104,13 +92,13 @@ services:
       start_period: 15s
 
   # Microservices
-  movie-service:
-    container_name: movie-service
-    build: ./services/movie-service
+  user-service:
+    container_name: user-service
+    build: ./services/user-service
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_movie?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_user?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
       ticket-booking-db:
@@ -129,13 +117,13 @@ services:
       retries: 5
       start_period: 15s
 
-  user-service:
-    container_name: user-service
-    build: ./services/user-service
+  movie-service:
+    container_name: movie-service
+    build: ./services/movie-service
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_user?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_movie?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
       ticket-booking-db:
@@ -169,7 +157,7 @@ services:
         condition: service_healthy
       gateway:
         condition: service_healthy
-      user-service:
+      movie-service:
         condition: service_healthy
     networks:
       - network
