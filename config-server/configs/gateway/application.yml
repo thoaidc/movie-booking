@@ -5,9 +5,11 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
+              - "host.docker.internal:4200"
               - "http://localhost:4200"
-              - "http://localhost:8080"
+              - "host.docker.internal:8080"
               - "http://127.0.0.1:5500"
+              - "host.docker.internal:5500"
             allowedMethods:
               - GET
               - POST
