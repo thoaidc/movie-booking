@@ -23,6 +23,7 @@ public class MovieAggregate {
         event.setBookingId(cmd.getBookingId());
         event.setSeatIds(cmd.getSeatIds());
         event.setTotalAmount(cmd.getTotalAmount());
+        event.setUserId(cmd.getUserId());
         AggregateLifecycle.apply(event);
         System.out.println("Movie aggregate nhận command khởi tạo check seat");
     }
@@ -35,6 +36,7 @@ public class MovieAggregate {
         event.setSeatIds(cmd.getSeatIds());
         event.setAmount(cmd.getTotalAmount());
         event.setSuccess(cmd.isSuccess());
+        event.setUserId(cmd.getUserId());
         AggregateLifecycle.apply(event);
         System.out.println("Movie aggregate nhận command kết quả giữ ghế: " + cmd.isSuccess());
     }

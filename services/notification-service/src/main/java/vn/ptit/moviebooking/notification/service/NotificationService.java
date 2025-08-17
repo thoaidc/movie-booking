@@ -38,6 +38,7 @@ public class NotificationService {
 
     @Transactional
     public Notification sendNotificationToClient(Notification notification) {
+        // Send MAIL here
         notification.setStatus(NotificationConstants.NotificationStatus.SUCCESS);
         return notificationRepository.save(notification);
     }

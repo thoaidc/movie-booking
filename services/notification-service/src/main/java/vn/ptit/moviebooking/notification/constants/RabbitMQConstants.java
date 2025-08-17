@@ -3,11 +3,11 @@ package vn.ptit.moviebooking.notification.constants;
 public interface RabbitMQConstants {
 
     interface Queue {
-        String NOTIFICATION_COMMAND = "queue.notifications.command";
+        String NOTIFICATION = "queue.notifications";
     }
 
     interface RoutingKey {
-        String NOTIFICATION_REPLY = "routingKey.notifications.reply";
+        String NOTIFICATION_REPLY = "routingKey.notifications";
     }
 
     interface Exchange {

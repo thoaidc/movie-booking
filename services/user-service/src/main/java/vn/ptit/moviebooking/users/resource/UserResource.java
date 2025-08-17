@@ -8,7 +8,7 @@ import vn.ptit.moviebooking.users.dto.response.BaseResponseDTO;
 import vn.ptit.moviebooking.users.service.UserService;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserResource {
 
     private final UserService userService;
@@ -17,8 +17,13 @@ public class UserResource {
         this.userService = userService;
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public BaseResponseDTO getUserById(@PathVariable Integer userId) {
         return BaseResponseDTO.builder().ok(userService.getById(userId));
+    }
+
+    @GetMapping("/p/users/{userId}")
+    public BaseResponseDTO getUser(@PathVariable Integer userId) {
+        return BaseResponseDTO.builder().ok(userService.findUserById(userId));
     }
 }

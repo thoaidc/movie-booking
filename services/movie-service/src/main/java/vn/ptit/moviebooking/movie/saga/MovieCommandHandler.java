@@ -26,6 +26,7 @@ public class MovieCommandHandler {
         reserveSeatResultCommand.setSeatIds(command.getSeatIds());
         reserveSeatResultCommand.setSuccess(success);
         reserveSeatResultCommand.setTotalAmount(command.getTotalAmount());
+        reserveSeatResultCommand.setUserId(command.getUserId());
         System.out.println("Movie command handler xử lý command kiểm tra và giữ ghế: " + success);
         commandGateway.send(reserveSeatResultCommand);
     }

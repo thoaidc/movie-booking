@@ -31,6 +31,7 @@ public class BookingController {
         createBookingCommand.setBookingId(booking.getId());
         createBookingCommand.setSeatIds(bookingRequest.getSeatIds());
         createBookingCommand.setTotalAmount(bookingRequest.getTotalAmount());
+        createBookingCommand.setUserId(bookingRequest.getUserId());
         System.out.println("Create new booking: " + booking.getId());
         commandGateway.sendAndWait(createBookingCommand);
         return BaseResponseDTO.builder().ok(booking.getId());

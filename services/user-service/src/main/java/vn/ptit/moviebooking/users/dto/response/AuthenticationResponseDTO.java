@@ -1,8 +1,5 @@
 package vn.ptit.moviebooking.users.dto.response;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class AuthenticationResponseDTO {
 
     private Integer userId;

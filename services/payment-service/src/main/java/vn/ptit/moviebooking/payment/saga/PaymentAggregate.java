@@ -24,6 +24,7 @@ public class PaymentAggregate {
         createPaymentEvent.setTransactionId(cmd.getTransactionId());
         createPaymentEvent.setAmount(cmd.getAmount());
         createPaymentEvent.setSeatIds(cmd.getSeatIds());
+        createPaymentEvent.setUserId(cmd.getUserId());
         AggregateLifecycle.apply(createPaymentEvent);
         System.out.println("Payment aggregate nhận command khởi tạo: " + cmd.getPaymentId());
     }
@@ -37,6 +38,7 @@ public class PaymentAggregate {
         paymentResultEvent.setAmount(cmd.getAmount());
         paymentResultEvent.setSuccess(cmd.isSuccess());
         paymentResultEvent.setSeatIds(cmd.getSeatIds());
+        paymentResultEvent.setUserId(cmd.getUserId());
         AggregateLifecycle.apply(paymentResultEvent);
         System.out.println("Payment aggregate nhận command kết quả thanh toán: " + cmd.isSuccess());
     }

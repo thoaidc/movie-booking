@@ -31,6 +31,7 @@ public class PaymentCommandHandler {
         processPaymentResultCommand.setAmount(cmd.getAmount());
         processPaymentResultCommand.setSuccess(isPaymentSuccess);
         processPaymentResultCommand.setSeatIds(cmd.getSeatIds());
+        processPaymentResultCommand.setUserId(cmd.getUserId());
         commandGateway.send(processPaymentResultCommand);
         System.out.println("Payment command handler xử lý thanh toán, kết quả: " + isPaymentSuccess);
     }

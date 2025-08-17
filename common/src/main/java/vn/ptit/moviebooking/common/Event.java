@@ -7,8 +7,17 @@ public class Event {
     // Booking
     public static class CreateBookingEvent {
         private Integer bookingId;
+        private Integer userId;
         private Float totalAmount;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public CreateBookingEvent() {}
 
@@ -40,9 +49,18 @@ public class Event {
     public static class MarkBookingSuccessEvent {
         private Integer bookingId;
         private Integer paymentId;
+        private Integer userId;
         private String transactionId;
         private Float totalAmount;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public String getTransactionId() {
             return transactionId;
@@ -161,8 +179,17 @@ public class Event {
     public static class CreateCheckSeatEvent {
         private String seatReservationId;
         private Integer bookingId;
+        private Integer userId;
         private List<Integer> seatIds;
         private Float totalAmount;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public Float getTotalAmount() {
             return totalAmount;
@@ -203,9 +230,18 @@ public class Event {
     public static class ReserveSeatResultEvent {
         private String seatReservationId;
         private Integer bookingId;
+        private Integer userId;
         private Float amount;
         private List<Integer> seatIds;
         private boolean success;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public ReserveSeatResultEvent() {
         }
@@ -298,8 +334,17 @@ public class Event {
         private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
+        private Integer userId;
         private Float amount;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public String getTransactionId() {
             return transactionId;
@@ -349,10 +394,19 @@ public class Event {
         private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
+        private Integer userId;
         private Float amount;
         private boolean success;
         private String reason;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public String getTransactionId() {
             return transactionId;

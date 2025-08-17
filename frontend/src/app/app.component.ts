@@ -81,6 +81,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authenticated = false;
     this.username = null;
     localStorage.removeItem('username');
+    localStorage.removeItem('userId');
     localStorage.removeItem('token');
   }
 

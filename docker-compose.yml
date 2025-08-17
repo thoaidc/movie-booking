@@ -95,8 +95,6 @@ services:
   user-service:
     container_name: user-service
     build: ./services/user-service
-    env_file:
-      - .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_user?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
@@ -120,8 +118,6 @@ services:
   movie-service:
     container_name: movie-service
     build: ./services/movie-service
-    env_file:
-      - .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_movie?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
@@ -145,8 +141,6 @@ services:
   payment-service:
     container_name: payment-service
     build: ./services/payment-service
-    env_file:
-      - .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_payment?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/

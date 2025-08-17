@@ -10,8 +10,17 @@ public class Command {
     public static class CreateBookingCommand {
         @TargetAggregateIdentifier
         private Integer bookingId;
+        private Integer userId;
         private Float totalAmount;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public CreateBookingCommand() {}
 
@@ -43,10 +52,19 @@ public class Command {
     public static class MarkBookingSuccessCommand {
         @TargetAggregateIdentifier
         private Integer bookingId;
+        private Integer userId;
         private Integer paymentId;
         private String transactionId;
         private Float totalAmount;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public Integer getPaymentId() {
             return paymentId;
@@ -159,8 +177,17 @@ public class Command {
         @TargetAggregateIdentifier
         private String seatReservationId;
         private Integer bookingId;
+        private Integer userId;
         private List<Integer> seatIds;
         private Float totalAmount;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public Float getTotalAmount() {
             return totalAmount;
@@ -202,8 +229,17 @@ public class Command {
         @TargetAggregateIdentifier
         private String seatReservationId;
         private Integer bookingId;
+        private Integer userId;
         private List<Integer> seatIds;
         private Float totalAmount;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public Float getTotalAmount() {
             return totalAmount;
@@ -244,10 +280,19 @@ public class Command {
     public static class ReserveSeatResultCommand {
         @TargetAggregateIdentifier
         private String seatReservationId;
+        private Integer userId;
         private Integer bookingId;
         private List<Integer> seatIds;
         private boolean success;
         private Float totalAmount;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public Float getTotalAmount() {
             return totalAmount;
@@ -384,9 +429,18 @@ public class Command {
         @TargetAggregateIdentifier
         private String transactionId;
         private Integer paymentId;
+        private Integer userId;
         private Integer bookingId;
         private Float amount;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public String getTransactionId() {
             return transactionId;
@@ -437,8 +491,17 @@ public class Command {
         private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
+        private Integer userId;
         private Float amount;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public String getTransactionId() {
             return transactionId;
@@ -489,9 +552,18 @@ public class Command {
         private String transactionId;
         private Integer paymentId;
         private Integer bookingId;
+        private Integer userId;
         private Float amount;
         private boolean success;
         private List<Integer> seatIds;
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
+        }
 
         public String getTransactionId() {
             return transactionId;

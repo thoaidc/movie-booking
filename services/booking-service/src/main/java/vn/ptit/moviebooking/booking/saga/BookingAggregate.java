@@ -30,6 +30,7 @@ public class BookingAggregate {
         createBookingEvent.setBookingId(createBookingCommand.getBookingId());
         createBookingEvent.setTotalAmount(createBookingCommand.getTotalAmount());
         createBookingEvent.setSeatIds(Optional.ofNullable(createBookingCommand.getSeatIds()).orElse(new ArrayList<>()));
+        createBookingEvent.setUserId(createBookingCommand.getUserId());
         AggregateLifecycle.apply(createBookingEvent);
         this.bookingId = createBookingEvent.getBookingId();
         System.out.println("Booking aggregate nhận command Tạo đơn hàng: "+ createBookingCommand.getBookingId());
@@ -42,6 +43,7 @@ public class BookingAggregate {
         if (result) {
             Event.MarkBookingSuccessEvent bookingSuccessEvent = new Event.MarkBookingSuccessEvent();
             bookingSuccessEvent.setBookingId(successCommand.getBookingId());
+            bookingSuccessEvent.setUserId(successCommand.getUserId());
             AggregateLifecycle.apply(bookingSuccessEvent);
             System.out.println("Booking aggregate nhận command xác nhận đặt hàng, xử lý thành công");
         } else {

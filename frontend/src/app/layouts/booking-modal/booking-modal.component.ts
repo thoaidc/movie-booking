@@ -140,7 +140,7 @@ export class BookingModalComponent implements OnInit, OnDestroy {
 
     this.isBooking = true;
     const bookingRequest: Booking = {
-      movieId: this.selectedShowInfo?.movieId || 0,
+      userId: Number.parseInt(localStorage.getItem("userId") || '0') || 0,
       showId: this.selectedShowId,
       totalAmount: (this.selectedShowInfo?.ticketPrice || 0) * this.selectedSeats.length,
       seatIds: this.selectedSeats

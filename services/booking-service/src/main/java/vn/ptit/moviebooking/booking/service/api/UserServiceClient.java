@@ -1,4 +1,4 @@
-package vn.ptit.moviebooking.booking.service;
+package vn.ptit.moviebooking.booking.service.api;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +9,6 @@ import vn.ptit.moviebooking.booking.dto.response.BaseResponseDTO;
 @FeignClient(name = "user-service")
 public interface UserServiceClient {
 
-    @GetMapping("/api/users/{userId}")
+    @GetMapping("/api/p/users/{userId}")
     BaseResponseDTO getUserInfo(@PathVariable Integer userId);
 }

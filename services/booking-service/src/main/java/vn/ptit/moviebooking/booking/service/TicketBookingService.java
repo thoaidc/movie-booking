@@ -1,21 +1,29 @@
 package vn.ptit.moviebooking.booking.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import vn.ptit.moviebooking.booking.constants.BookingConstants;
 import vn.ptit.moviebooking.booking.dto.request.BookingRequest;
+import vn.ptit.moviebooking.booking.dto.request.NotificationRequest;
+import vn.ptit.moviebooking.booking.dto.response.BaseResponseDTO;
+import vn.ptit.moviebooking.booking.dto.response.UserDTO;
 import vn.ptit.moviebooking.booking.entity.Booking;
 import vn.ptit.moviebooking.booking.entity.BookingSeat;
 import vn.ptit.moviebooking.booking.exception.BaseBadRequestException;
 import vn.ptit.moviebooking.booking.repository.BookingSeatRepository;
 import vn.ptit.moviebooking.booking.repository.TicketBookingRepository;
+import vn.ptit.moviebooking.booking.service.api.UserServiceClient;
+import vn.ptit.moviebooking.common.Event;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,6 +34,7 @@ public class TicketBookingService {
     private final UserServiceClient userServiceClient;
     private final ObjectMapper objectMapper;
     private static final String ENTITY_NAME = "TicketBookingService";
+    private static final Logger log = LoggerFactory.getLogger(TicketBookingService.class);
 
     public TicketBookingService(TicketBookingRepository ticketBookingRepository,
                                 BookingSeatRepository bookingSeatRepository,
@@ -41,6 +50,7 @@ public class TicketBookingService {
     public Booking createBooking(BookingRequest bookingRequest) {
         Booking booking = new Booking();
         booking.setShowId(bookingRequest.getShowId());
+        booking.setUserId(bookingRequest.getUserId());
         booking.setTotalAmount(bookingRequest.getTotalAmount());
         booking.setStatus(BookingConstants.Status.PENDING);
         booking.setCreateTime(ZonedDateTime.now(ZoneId.systemDefault()));
@@ -72,24 +82,23 @@ public class TicketBookingService {
         ticketBookingRepository.save(booking);
     }
 
-//    public NotificationRequest createNotificationCommand(BaseCommandReplyMessage request) {
-//        Integer userId = ticketBookingRepository.findCustomerIdByBookingId(request.getSagaId());
-//        BaseResponseDTO responseDTO = userServiceClient.getUserInfo(userId);
-//        NotificationCommand command = new NotificationCommand();
-//        command.setSagaId(request.getSagaId());
-//
-//        if (responseDTO.getStatus() && Objects.nonNull(responseDTO.getResult())) {
-//            try {
-//                CustomerDTO customerDTO = objectMapper.convertValue(responseDTO.getResult(), CustomerDTO.class);
-//                NotificationRequest notificationRequest = new NotificationRequest();
-//                notificationRequest.setSender("MOVIE-BOOKING-SYSTEM");
-//                notificationRequest.setReceiver(customerDTO.getEmail());
-//                notificationRequest.setTitle("Your ticket booking has completed successfully!");
-//                notificationRequest.setContent("Please double check the information on your ticket and make sure it is correct.");
-//                command.setNotificationRequest(notificationRequest);
-//            } catch (Exception ignored) {}
-//        }
-//
-//        return command;
-//    }
+    public NotificationRequest createNotification(Event.MarkBookingSuccessEvent event) {
+        BaseResponseDTO responseDTO = userServiceClient.getUserInfo(event.getUserId());
+
+        if (responseDTO.getStatus() && Objects.nonNull(responseDTO.getResult())) {
+            try {
+                UserDTO userDTO = objectMapper.convertValue(responseDTO.getResult(), UserDTO.class);
+                NotificationRequest notificationRequest = new NotificationRequest();
+                notificationRequest.setSender("MOVIE-BOOKING-SYSTEM");
+                notificationRequest.setReceiver(userDTO.getEmail());
+                notificationRequest.setTitle("Your ticket booking has completed successfully!");
+                notificationRequest.setContent("Please double check the information on your ticket and make sure it is correct.");
+                return notificationRequest;
+            } catch (Exception e) {
+                log.error("Could not create email: {}", e.getMessage());
+            }
+        }
+
+        return null;
+    }
 }

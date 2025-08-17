@@ -28,6 +28,7 @@ export class AuthComponent {
       if (response.status && response.result) {
         let token = response.result.token;
         localStorage.setItem("token", token);
+        localStorage.setItem("userId", '' + response.result.userId);
         localStorage.setItem("username", response.result.username);
         this.loginSuccess.emit(this.loginData.username);
         this.toast.success("Đăng nhập thành công");

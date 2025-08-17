@@ -5,7 +5,7 @@ import java.util.List;
 public class BookingRequest {
 
     private Integer showId;
-    private Integer movieId;
+    private Integer userId;
     private List<Integer> seatIds;
     private Float totalAmount;
 
@@ -33,11 +33,11 @@ public class BookingRequest {
         this.totalAmount = totalAmount;
     }
 
-    public Integer getMovieId() {
-        return movieId;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setMovieId(Integer movieId) {
-        this.movieId = movieId;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }

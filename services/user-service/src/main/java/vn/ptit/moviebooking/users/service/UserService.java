@@ -22,6 +22,7 @@ import vn.ptit.moviebooking.users.dto.request.LoginRequest;
 import vn.ptit.moviebooking.users.dto.request.RegisterRequest;
 import vn.ptit.moviebooking.users.dto.response.AuthenticationResponseDTO;
 import vn.ptit.moviebooking.users.dto.response.BaseResponseDTO;
+import vn.ptit.moviebooking.users.dto.response.UserDTO;
 import vn.ptit.moviebooking.users.exception.BaseAuthenticationException;
 import vn.ptit.moviebooking.users.exception.BaseBadRequestException;
 import vn.ptit.moviebooking.users.entity.User;
@@ -62,6 +63,11 @@ public class UserService {
         return customerOptional.get();
     }
 
+    public UserDTO findUserById(Integer userId) {
+        Optional<UserDTO> userDTOOptional = userRepository.findByUserId(userId);
+        return userDTOOptional.orElse(null);
+    }
+
     @Transactional
     public BaseResponseDTO register(RegisterRequest request) {
         User user = new User();
@@ -84,6 +90,7 @@ public class UserService {
         User user = userDetails.getUser();
         AuthenticationResponseDTO results = new AuthenticationResponseDTO();
         BeanUtils.copyProperties(user, results);
+        results.setUserId(user.getId());
 
         String jwtToken = tokenProvider.generateToken(user.getId(), request.getUsername());
         results.setToken(jwtToken);

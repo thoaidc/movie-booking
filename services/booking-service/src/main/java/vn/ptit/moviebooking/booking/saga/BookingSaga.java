@@ -10,12 +10,14 @@ import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.spring.stereotype.Saga;
 import org.springframework.beans.factory.annotation.Autowired;
 import vn.ptit.moviebooking.booking.constants.BookingConstants;
+import vn.ptit.moviebooking.booking.constants.RabbitMQConstants;
 import vn.ptit.moviebooking.booking.dto.PaymentDTO;
 import vn.ptit.moviebooking.booking.dto.request.PaymentRequest;
 import vn.ptit.moviebooking.booking.dto.response.BaseResponseDTO;
-import vn.ptit.moviebooking.booking.service.PaymentServiceClient;
+import vn.ptit.moviebooking.booking.service.api.PaymentServiceClient;
 import vn.ptit.moviebooking.booking.service.TicketBookingService;
 import vn.ptit.moviebooking.booking.service.WebSocketNotificationService;
+import vn.ptit.moviebooking.booking.service.rabbitmq.RabbitMQProducer;
 import vn.ptit.moviebooking.common.Command;
 import vn.ptit.moviebooking.common.Event;
 
@@ -35,6 +37,8 @@ public class BookingSaga {
     private TicketBookingService ticketBookingService;
     @Autowired
     private WebSocketNotificationService socketNotificationService;
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
 
     public BookingSaga() {}
 
@@ -53,6 +57,7 @@ public class BookingSaga {
         command.setSeatReservationId(seatReservationId);
         command.setSeatIds(event.getSeatIds());
         command.setTotalAmount(event.getTotalAmount());
+        command.setUserId(event.getUserId());
         commandGateway.send(command);
         System.out.println("Start saga: " + event.getBookingId());
         socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(), "Start saga booking ID: " + event.getBookingId());
@@ -66,6 +71,7 @@ public class BookingSaga {
         command.setSeatReservationId(event.getSeatReservationId());
         command.setSeatIds(event.getSeatIds());
         command.setTotalAmount(event.getTotalAmount());
+        command.setUserId(event.getUserId());
         commandGateway.send(command);
         System.out.println("Gửi command tạo check seat aggregate");
         socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(), "Khởi tạo yêu cầu giữ ghế: " + event.getSeatIds());
@@ -89,6 +95,7 @@ public class BookingSaga {
             createPaymentCommand.setTransactionId(transactionId);
             createPaymentCommand.setAmount(event.getAmount());
             createPaymentCommand.setSeatIds(event.getSeatIds());
+            createPaymentCommand.setUserId(event.getUserId());
             commandGateway.send(createPaymentCommand);
             System.out.println("Saga giữ ghế thành công, gửi command tạo thanh toán aggregate: "+ event.getSeatReservationId());
             socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(),
@@ -116,6 +123,7 @@ public class BookingSaga {
         processPaymentCommand.setTransactionId(event.getTransactionId());
         processPaymentCommand.setAmount(event.getAmount());
         processPaymentCommand.setSeatIds(event.getSeatIds());
+        processPaymentCommand.setUserId(event.getUserId());
         commandGateway.send(processPaymentCommand);
         System.out.println("Saga tạo thanh toán aggregate thành công, gửi command tiến hành thanh toán: " +  event.getPaymentId());
         socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(), "Tiến hành thanh toán: " + event.getPaymentId());
@@ -133,6 +141,7 @@ public class BookingSaga {
             bookingSuccessCommand.setSeatIds(event.getSeatIds());
             bookingSuccessCommand.setPaymentId(event.getPaymentId());
             bookingSuccessCommand.setTransactionId(event.getTransactionId());
+            bookingSuccessCommand.setUserId(event.getUserId());
             commandGateway.send(bookingSuccessCommand);
             System.out.println("Saga thanh toán thành công, gửi command xác nhận đơn hàng thành công: "+ event.getPaymentId());
             socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(),
@@ -167,6 +176,8 @@ public class BookingSaga {
         ticketBookingService.updateBookingStatus(event.getBookingId(), BookingConstants.Status.COMPLETED);
         socketNotificationService.sendMessageToTopic("/topics/bookings/" + event.getBookingId(),
                 "Đơn hàng đã hoàn thành: " + event.getBookingId());
+        rabbitMQProducer.sendMessage(RabbitMQConstants.RoutingKey.NOTIFICATION, ticketBookingService.createNotification(event));
+        System.out.println("Gửi command send mail");
     }
 
     @SagaEventHandler(associationProperty = "bookingId")
