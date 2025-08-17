@@ -1,4 +1,51 @@
 services:
+  axon-server:
+    image: axoniq/axonserver:latest-jdk-17-dev
+    container_name: axon-server-prod
+    networks:
+      - network
+    environment:
+      AXONIQ_AXONSERVER_DEVMODE_ENABLED: true
+    ports:
+      - "8024:8024"   # UI
+      - "8124:8124"   # gRPC
+    restart: unless-stopped
+
+  # MySQL databases
+  ticket-booking-db:
+    image: mysql:8.0.40-oracle
+    container_name: ticket-booking-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3300:3306"
+    volumes:
+      - mb_ticket_booking_data:/var/lib/mysql
+    networks:
+      - network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  # DB initializer
+  db-initializer:
+    image: mysql:8.0.40-oracle
+    container_name: db-initializer
+    volumes:
+      - ./scripts:/scripts
+    command: "bash /scripts/init.sh"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      ticket-booking-db:
+        condition: service_healthy
+    networks:
+      - network
+    restart: no
+
   config-server:
     container_name: config-server
     build: ./config-server
@@ -13,17 +60,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
-
-  axon-server:
-    image: axoniq/axonserver:latest-jdk-17-dev
-    container_name: axon-server-prod
-    networks:
-      - network
-    environment:
-      AXONIQ_AXONSERVER_DEVMODE_ENABLED: true
-    ports:
-      - "8024:8024"   # UI
-      - "8124:8124"   # gRPC
 
   # Service Discovery
   service-registry:
@@ -67,139 +103,17 @@ services:
       retries: 5
       start_period: 15s
 
-  # MySQL databases
-  movie-db:
-    image: mysql:8.0.40-oracle
-    container_name: movie-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mb_movie
-    ports:
-      - "3300:3306"
-    volumes:
-      - mb_movie_data:/var/lib/mysql
-    networks:
-      - network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-
-  user-db:
-    image: mysql:8.0.40-oracle
-    container_name: user-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mb_user
-    ports:
-      - "3302:3306"
-    volumes:
-      - mb_user_data:/var/lib/mysql
-    networks:
-      - network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-
-  payment-db:
-    image: mysql:8.0.40-oracle
-    container_name: payment-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mb_payment
-    ports:
-      - "3303:3306"
-    volumes:
-      - mb_payment_data:/var/lib/mysql
-    networks:
-      - network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-
-  booking-db:
-    image: mysql:8.0.40-oracle
-    container_name: booking-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mb_booking
-    ports:
-      - "3304:3306"
-    volumes:
-      - mb_booking_data:/var/lib/mysql
-    networks:
-      - network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-
-  notification-db:
-    image: mysql:8.0.40-oracle
-    container_name: notification-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mb_notification
-    ports:
-      - "3305:3306"
-    volumes:
-      - mb_notification_data:/var/lib/mysql
-    networks:
-      - network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-
-  # DB initializer
-  db-initializer:
-    image: mysql:8.0.40-oracle
-    container_name: db-initializer
-    volumes:
-      - ./scripts:/scripts
-    command: "bash /scripts/init.sh"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-    depends_on:
-      movie-db:
-        condition: service_healthy
-      user-db:
-        condition: service_healthy
-      payment-db:
-        condition: service_healthy
-      booking-db:
-        condition: service_healthy
-      notification-db:
-        condition: service_healthy
-    networks:
-      - network
-    restart: no
-
   # Microservices
   movie-service:
     container_name: movie-service
     build: ./services/movie-service
-    volumes:
-      - C:/Users/dctho/.m2:/root/.m2
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://movie-db:3306/mb_movie?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_movie?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      movie-db:
+      ticket-booking-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
@@ -221,10 +135,10 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://user-db:3306/mb_user?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_user?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      user-db:
+      ticket-booking-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
@@ -246,10 +160,10 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://payment-db:3306/mb_payment?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_payment?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      payment-db:
+      ticket-booking-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
@@ -273,16 +187,14 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://booking-db:3306/mb_booking?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_booking?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      booking-db:
+      ticket-booking-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
       gateway:
-        condition: service_healthy
-      movie-service:
         condition: service_healthy
       payment-service:
         condition: service_healthy
@@ -302,10 +214,10 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://notification-db:3306/mb_notification?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://ticket-booking-db:3306/mb_notification?useSSL=false&allowPublicKeyRetrieval=true
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
-      notification-db:
+      ticket-booking-db:
         condition: service_healthy
       service-registry:
         condition: service_healthy
@@ -355,8 +267,4 @@ networks:
 
 # Volumes
 volumes:
-  mb_movie_data:
-  mb_user_data:
-  mb_payment_data:
-  mb_booking_data:
-  mb_notification_data:
+  mb_ticket_booking_data:
