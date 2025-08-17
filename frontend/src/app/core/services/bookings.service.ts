@@ -18,6 +18,11 @@ export class BookingService {
   private createBookingApi = this.applicationConfigService.getEndpointFor(API_CREATE_BOOKING);
 
   createBookingRequest(bookingRequest: Booking): Observable<BaseResponse<any>> {
-    return this.http.post<BaseResponse<any>>(this.createBookingApi, bookingRequest);
+    return this.http.post<BaseResponse<any>>(this.createBookingApi, bookingRequest, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    });
   }
 }

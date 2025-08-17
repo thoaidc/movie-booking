@@ -1,4 +1,4 @@
-package vn.ptit.moviebooking.users.security;
+package vn.ptit.moviebooking.booking.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-import vn.ptit.moviebooking.users.common.SecurityUtils;
+import vn.ptit.moviebooking.booking.common.SecurityUtils;
 
 @Configuration
 @EnableWebSecurity

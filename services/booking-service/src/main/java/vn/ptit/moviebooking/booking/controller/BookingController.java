@@ -13,7 +13,7 @@ import vn.ptit.moviebooking.booking.service.TicketBookingService;
 import vn.ptit.moviebooking.common.Command;
 
 @RestController
-@RequestMapping("/api/p/bookings")
+@RequestMapping("/api/bookings")
 public class BookingController {
 
     private final CommandGateway commandGateway;

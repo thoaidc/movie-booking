@@ -1,38 +1,60 @@
 spring:
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true  # Automatically create routes from service discovery
-          lower-case-service-id: true
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"
+              - "http://localhost:8080"
+              - "http://127.0.0.1:5500"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - Content-Type
+              - Authorization
+              - Accept
+              - Origin
+              - X-CSRF-Token
+              - X-Requested-With
+              - Access-Control-Allow-Origin
+              - X-App-Version
+              - X-Device-ID
+            allowCredentials: true
+            maxAge: 3600  # Cache preflight response in 1 hour
       routes:
         - id: user-service
-          uri: lb://user-service
+          uri: lb://USER-SERVICE
           predicates:
             - Path=/api/users/**, /api/p/users/**
 
         - id: movie-service
-          uri: lb://movie-service
+          uri: lb://MOVIE-SERVICE
           predicates:
             - Path=/api/p/movies/**, /api/p/shows/**, /api/p/seats/**
 
         - id: notification-service
-          uri: lb://notification-service
+          uri: lb://NOTIFICATION-SERVICE
           predicates:
             - Path=/api/notifications/**, /api/p/notifications/**
 
         - id: payment-service
-          uri: lb://payment-service
+          uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/api/payments/**, /api/p/payments/**
 
         - id: booking-service
-          uri: lb://booking-service
+          uri: lb://BOOKING-SERVICE
           predicates:
             - Path=/api/bookings/**, /api/p/bookings/**
 
         - id: booking-service-websocket
-          uri: lb:ws://booking-service
+          uri: lb:ws://BOOKING-SERVICE
           predicates:
             - Path=/api/p/ws
             - Header=Upgrade, websocket
