@@ -1,6 +1,8 @@
 package vn.ptit.moviebooking.booking.controller;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,5 +37,10 @@ public class BookingController {
         System.out.println("Create new booking: " + booking.getId());
         commandGateway.sendAndWait(createBookingCommand);
         return BaseResponseDTO.builder().ok(booking.getId());
+    }
+
+    @GetMapping("/{userId}")
+    public BaseResponseDTO getOrders(@PathVariable Integer userId) {
+        return bookingService.getOrders(userId);
     }
 }

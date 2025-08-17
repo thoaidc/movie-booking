@@ -1,0 +1,38 @@
+<div class="container mt-5 pt-5">
+  <h3>Danh sách đơn hàng</h3>
+  <table class="table table-bordered table-striped mt-3">
+    <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Khách hàng</th>
+      <th>Phim</th>
+      <th>Ghế</th>
+      <th>Ngày đặt</th>
+      <th>Tổng tiền (VNĐ)</th>
+      <th>Trạng thái</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let order of orders">
+      <td>{{ order.id }}</td>
+      <td>{{ order.customer }}</td>
+      <td>{{ order.movie }}</td>
+      <td>
+        <ng-container *ngIf="order.seats?.length; else noSeat">
+            <span class="badge bg-secondary me-1" *ngFor="let seat of order.seats">
+              {{ seat }}
+            </span>
+        </ng-container>
+        <ng-template #noSeat>-</ng-template>
+      </td>
+      <td>{{ order.date }}</td>
+      <td>{{ order.total | number }}</td>
+      <td>
+        <span class="badge" [ngClass]="getStatusClass(order.status)">
+          {{ statusMap[order.status] || order.status }}
+        </span>
+      </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

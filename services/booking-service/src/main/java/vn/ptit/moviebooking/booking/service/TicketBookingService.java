@@ -7,15 +7,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import vn.ptit.moviebooking.booking.constants.BookingConstants;
+import vn.ptit.moviebooking.booking.dto.OrderDTO;
+import vn.ptit.moviebooking.booking.dto.OrderResponse;
 import vn.ptit.moviebooking.booking.dto.request.BookingRequest;
+import vn.ptit.moviebooking.booking.dto.request.GetOrderInfoRequest;
 import vn.ptit.moviebooking.booking.dto.request.NotificationRequest;
 import vn.ptit.moviebooking.booking.dto.response.BaseResponseDTO;
+import vn.ptit.moviebooking.booking.dto.response.OrderInfoResponse;
 import vn.ptit.moviebooking.booking.dto.response.UserDTO;
 import vn.ptit.moviebooking.booking.entity.Booking;
 import vn.ptit.moviebooking.booking.entity.BookingSeat;
 import vn.ptit.moviebooking.booking.exception.BaseBadRequestException;
 import vn.ptit.moviebooking.booking.repository.BookingSeatRepository;
 import vn.ptit.moviebooking.booking.repository.TicketBookingRepository;
+import vn.ptit.moviebooking.booking.service.api.MovieClient;
 import vn.ptit.moviebooking.booking.service.api.UserServiceClient;
 import vn.ptit.moviebooking.common.Event;
 
@@ -32,17 +37,19 @@ public class TicketBookingService {
     private final TicketBookingRepository ticketBookingRepository;
     private final BookingSeatRepository bookingSeatRepository;
     private final UserServiceClient userServiceClient;
+    private final MovieClient movieClient;
     private final ObjectMapper objectMapper;
     private static final String ENTITY_NAME = "TicketBookingService";
     private static final Logger log = LoggerFactory.getLogger(TicketBookingService.class);
 
     public TicketBookingService(TicketBookingRepository ticketBookingRepository,
                                 BookingSeatRepository bookingSeatRepository,
-                                UserServiceClient userServiceClient,
+                                UserServiceClient userServiceClient, MovieClient movieClient,
                                 ObjectMapper objectMapper) {
         this.ticketBookingRepository = ticketBookingRepository;
         this.bookingSeatRepository = bookingSeatRepository;
         this.userServiceClient = userServiceClient;
+        this.movieClient = movieClient;
         this.objectMapper = objectMapper;
     }
 
@@ -100,5 +107,35 @@ public class TicketBookingService {
         }
 
         return null;
+    }
+
+    public BaseResponseDTO getOrders(Integer userId) {
+        List<OrderResponse> orderResponses = new ArrayList<>();
+        List<OrderDTO> orderDTOS = ticketBookingRepository.getAllOrders(userId);
+
+        if (Objects.nonNull(orderDTOS) && !orderDTOS.isEmpty()) {
+            for (OrderDTO orderDTO : orderDTOS) {
+                Integer showId = orderDTO.getShowId();
+                List<Integer> seatIds = bookingSeatRepository.findAllSeatIdsByBookingId(orderDTO.getId());
+                GetOrderInfoRequest request = new GetOrderInfoRequest();
+                request.setShowId(showId);
+                request.setSeatIds(seatIds);
+                BaseResponseDTO responseDTO = movieClient.getMovieInfo(request);
+                OrderInfoResponse orderInfoResponse = objectMapper.convertValue(responseDTO.getResult(), OrderInfoResponse.class);
+                BaseResponseDTO response = userServiceClient.getUserInfo(userId);
+                UserDTO userDTO = objectMapper.convertValue(response.getResult(), UserDTO.class);
+                OrderResponse orderResponse = new OrderResponse();
+                orderResponse.setId(orderDTO.getId());
+                orderResponse.setDate(orderDTO.getOrderTime());
+                orderResponse.setMovie(orderInfoResponse.getMovie());
+                orderResponse.setSeats(orderInfoResponse.getSeats());
+                orderResponse.setStatus(orderDTO.getStatus());
+                orderResponse.setCustomer(userDTO.getUsername());
+                orderResponse.setTotal(orderDTO.getTotal());
+                orderResponses.add(orderResponse);
+            }
+        }
+
+        return BaseResponseDTO.builder().ok(orderResponses);
     }
 }

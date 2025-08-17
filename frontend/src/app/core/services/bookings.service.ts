@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {ApplicationConfigService} from '../config/application-config.service';
 import {
   API_CREATE_BOOKING
 } from '../../constants/api.constants';
-import {Booking} from '../models/bookings.model';
+import {Booking, Order} from '../models/bookings.model';
 import {Observable} from 'rxjs';
 import {BaseResponse} from '../models/response.model';
 
@@ -24,5 +24,17 @@ export class BookingService {
         'Authorization': 'Bearer ' + localStorage.getItem('token')
       }
     });
+  }
+
+  getOrders(userId: number): Observable<BaseResponse<Order[]>> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem("token")
+    });
+
+    return this.http.get<BaseResponse<Order[]>>(
+      `${this.createBookingApi}/${userId}`,
+      { headers }
+    );
   }
 }

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import vn.ptit.moviebooking.movie.entity.Movie;
 
+import java.util.Optional;
+
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
 
@@ -35,4 +37,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
         @Param("toDate") String toDate,
         Pageable pageable
     );
+
+    @Query(value = "select m.name from movie m join show_time s on s.movie_id = m.id and s.id = ?1", nativeQuery = true)
+    Optional<String> getMovieByShowId(Integer showId);
 }

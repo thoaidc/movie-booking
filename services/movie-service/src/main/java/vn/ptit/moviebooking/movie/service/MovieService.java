@@ -4,9 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import vn.ptit.moviebooking.movie.constants.HttpStatusConstants;
+import vn.ptit.moviebooking.movie.dto.GetOrderInfoRequest;
+import vn.ptit.moviebooking.movie.dto.OrderInfoResponse;
 import vn.ptit.moviebooking.movie.dto.request.BaseRequestDTO;
 import vn.ptit.moviebooking.movie.dto.response.BaseResponseDTO;
 import vn.ptit.moviebooking.movie.entity.Movie;
+import vn.ptit.moviebooking.movie.entity.Seat;
 import vn.ptit.moviebooking.movie.entity.Show;
 import vn.ptit.moviebooking.movie.repository.MovieRepository;
 import vn.ptit.moviebooking.movie.repository.SeatRepository;
@@ -14,7 +17,9 @@ import vn.ptit.moviebooking.movie.repository.ShowRepository;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
@@ -29,6 +34,15 @@ public class MovieService {
         this.movieRepository = movieRepository;
         this.showRepository = showRepository;
         this.seatRepository = seatRepository;
+    }
+
+    public BaseResponseDTO getOrderMovieInfo(GetOrderInfoRequest request) {
+        String movie = movieRepository.getMovieByShowId(request.getShowId()).orElse("Null");
+        List<String> seats = seatRepository.findAllById(request.getSeatIds()).stream().map(Seat::getCode).toList();
+        OrderInfoResponse orderInfoResponse = new OrderInfoResponse();
+        orderInfoResponse.setMovie(movie);
+        orderInfoResponse.setSeats(seats);
+        return BaseResponseDTO.builder().ok(orderInfoResponse);
     }
 
     public BaseResponseDTO getAllMovieWithPaging(BaseRequestDTO request) {

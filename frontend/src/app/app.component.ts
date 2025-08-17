@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import {LoadingBarModule} from '@ngx-loading-bar/core';
 import {Subscription} from 'rxjs';
 import {WebsocketService} from './core/services/websocket.service';
@@ -61,7 +61,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private modalService: NgbModal,
     private movieService: MovieService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -75,6 +76,14 @@ export class AppComponent implements OnInit, OnDestroy {
   onLoginSuccess(username: string) {
     this.authenticated = true;
     this.username = username;
+  }
+
+  toggleOrders() {
+    if (this.router.url === '/orders') {
+      this.router.navigateByUrl('');
+    } else {
+      this.router.navigateByUrl('/orders');
+    }
   }
 
   logout() {
