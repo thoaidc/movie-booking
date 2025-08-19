@@ -104,6 +104,8 @@ public class TicketBookingService {
             } catch (Exception e) {
                 log.error("Could not create email: {}", e.getMessage());
             }
+        } else {
+            log.error("Could not get user info: {} - {}", responseDTO.getMessage(), responseDTO.getResult());
         }
 
         return null;
